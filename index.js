@@ -1,11 +1,16 @@
 const fs = require("fs");
 const inquirer = require('inquirer');
+const util = require('util');
 const consts = require('./consts');
+const prompts = require("./prompts");
 
-function startPrompt() {
+const writeFileAsync = util.promisify(fs.writeFile);
+const appendFileAsync = util.promisify(fs.appendFile);
+
+async function startPrompt() {
     let optionsSections = [];
 
-    inquirer
+    await inquirer
         .prompt([
             {
                 name: "sectionsPrimary",
@@ -46,16 +51,25 @@ function startPrompt() {
         }) 
 }
 
-function handleSectionCreation(sections){
-    let finishedText = "";
+async function handleSectionCreation(sections){
+    let formattedSectionsToDisplay = [];
 
     for(sectionName in sections) {
         let thisSectionName = sections[sectionName];
+        let thisSectionFormatted = "";
 
         switch(thisSectionName) {
             case consts.imageName:
+                await prompts.image()
+                .then((answers) => {
+                    thisSectionFormatted = consts.getImageFormat(answers.imageURL, answers.imageAlt);
+                })
                 break;
-            case consts.imageName:
+            case consts.linkName:
+                await prompts.deployedLink()
+                .then((answers) => {
+                    thisSectionFormatted = consts.getDeployedLinkFormat(answers.deployedLink);
+                })
                 break;
             case consts.imageName:
                 break;
@@ -74,13 +88,20 @@ function handleSectionCreation(sections){
             case consts.imageName:
                 break;
         }
+
+        formattedSectionsToDisplay.push(thisSectionFormatted);
     }
+
+    writeToFile(formattedSectionsToDisplay);
 }
 
-function fillSectionWithInfo(section) {
-    inquirer.prompt([
+function writeToFile(formattedSectionsToDisplay) {
+    // Clear file
+    writeFileAsync("./README.md", "");
 
-    ])
+    for (formattedSection in formattedSectionsToDisplay) {
+        appendFileAsync("./README.md", formattedSectionsToDisplay[formattedSection]);
+    };
 }
 
 startPrompt();

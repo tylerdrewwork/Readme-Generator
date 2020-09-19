@@ -1,6 +1,6 @@
 ### [Deployed Link](link)
 
-![Image Here](image-link)
+![Image Alt](image-link)
 
 ------
 

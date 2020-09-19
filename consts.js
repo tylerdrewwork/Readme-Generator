@@ -10,3 +10,11 @@ exports.liscenseName = "Liscense";
 exports.contributingName = "Contributing";
 exports.testsName = "Tests";
 exports.questionsName = "Questions";
+
+exports.getImageFormat = (imageURL, imageAlt) => {
+    return `![${imageAlt}](${imageURL})`;
+}
+
+exports.getDeployedLinkFormat = (deployedLink) => {
+    return  `### [Deployed Link](${deployedLink})`;
+}
