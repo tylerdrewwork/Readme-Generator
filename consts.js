@@ -11,10 +11,13 @@ exports.contributingName = "Contributing";
 exports.testsName = "Tests";
 exports.questionsName = "Questions";
 
+let br = "\n";
+let br2 = "\n\n";
+
 exports.getImageFormat = (imageURL, imageAlt) => {
-    return `![${imageAlt}](${imageURL})`;
+    return `![${imageAlt}](${imageURL})` + br2;
 }
 
 exports.getDeployedLinkFormat = (deployedLink) => {
-    return  `### [Deployed Link](${deployedLink})`;
+    return  `### [Click here to launch this application](${deployedLink})` + br2;
 }
