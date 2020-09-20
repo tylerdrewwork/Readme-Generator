@@ -1,6 +1,8 @@
 const fs = require("fs");
 const inquirer = require('inquirer');
 const util = require('util');
+const clic = require('cli-color');
+
 const consts = require('./consts');
 const prompts = require("./prompts");
 
@@ -18,7 +20,7 @@ async function startPrompt() {
                 message: "What sections would you like to include in your README?",
                 choices: [
                     new inquirer.Separator("== Headers =="),
-                    consts.imageName, consts.deployedLinkName, consts.lastUpdateDateName, consts.tableOfContentsName,
+                    clic.red(consts.imageName), consts.deployedLinkName, consts.lastUpdateDateName, consts.tableOfContentsName,
                     new inquirer.Separator("== Details =="),
                     consts.installationName, consts.usageName, consts.currentFeaturesName, consts.plannedFeaturesName,
                     new inquirer.Separator("== About =="),

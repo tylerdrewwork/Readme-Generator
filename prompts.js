@@ -60,15 +60,11 @@ const lastUpdatedDateQuestions = [
 const installationQuestions = [
     {
         name: "Installation Instructions",
-        type: "expand",
+        type: "list",
         message: "Please list any installation instructions: ",
-        choices: [
-            {
-                name: "test", 
-                value: "testvalue!",
-                key: "a"
-            } 
-        ]
+        choices: function (answers) {
+            
+        }
     }
 ]
 
