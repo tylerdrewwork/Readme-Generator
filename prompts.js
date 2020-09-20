@@ -48,14 +48,16 @@ const deployedLinkQuestions = [
     {
         name: "deployedLink",
         message: "Please input the URL of your deployed application: "
-    }
+    },
+    { ...confirmPrompt }
 ]
 
 const lastUpdatedDateQuestions = [
     {
         name: "updatedDate",
         message: "Please input the date this project was last updated: "
-    }
+    },
+    { ...confirmPrompt }
 ]
 
 //////////////////////////
@@ -63,19 +65,38 @@ const lastUpdatedDateQuestions = [
 //////////////////////////
 
 /* NOTE: efficiency/readability upgrade!
-- I changed the code here to reduce from 8 lines of code for EACH prompt
+-- Reduced EACH prompt code from 10+ lines to 1(!!) line of code each -- without sacrificing readability.
+
+- I changed the code here to reduce from 10+ lines of code for EACH prompt
  that was created to *2* lines of code for each prompt.
+ You can see this in the exports for these prompts.
+
 - Before I reworked this, each prompt was it's own async function, taking up 8 lines of code...
  I decided to take a risk in the complexity of my knowledge to make my code more DRY (scary!)
+ 
 - For the rework, I created a new constructor (Prompt), that takes in questions and desired format.
  now, the getFormat functions take in arguments and return the desired function using rest operators! :D
  All that I need to do in index.js is call this new object and start the prompt!
  Awesome!!! :D
 */
+
+const br1 = "\n";
+const br2 = "\n\n";
+
 const getImageFormat = (...args) => {
     let imageAlt = args[0]["imageAlt"];
     let imageURL = args[0]["imageURL"];
-    return `![${imageAlt}](${imageURL})` + "\n\n";
+    return `![${imageAlt}](${imageURL})` + br2;
+}
+
+const getDeployedLinkFormat = (...args) => {
+    let deployedLink = args[0]["deployedLink"];
+    return `### [Click here to launch this application](${deployedLink})` + br2;
+}
+
+const getLastUpdatedDate = (...args) => {
+    let lastUpdatedDate = args[0]["updatedDate"];
+    return `### **Last Updated**: ${lastUpdatedDate}` + br1;
 }
 
 function Prompt(questions, format) {
@@ -91,36 +112,6 @@ function Prompt(questions, format) {
     }
 }
 
-let image = new Prompt(imageQuestions, getImageFormat);
-exports.image = image;
-
-const imagePrompt = async() => {
-    let {confirm, ...answers} = await inquirer.prompt(imageQuestions);
-    if(confirm) {
-        return getImageFormat(answers.imageURL, answers.imageAlt);
-    } else {
-        return imagePrompt();
-    }
-}
-
-exports.imagePrompt = imagePrompt;
-
-const deployedLinkPrompt = async() => {
-    let {confirm, ...answers} = await inquirer.prompt(deployedLinkQuestions);
-    if(confirm) {
-        return get
-    }
-}
-
-exports.updatedDate = () => inquirer.prompt([
-
-]);
-
-exports.tableOfContents = async() => {
-    inquirer.prompt([
-        {
-            name: "",
-            message: "",
-        }
-    ])
-}
+exports.image = new Prompt(imageQuestions, getImageFormat);
+exports.deployedLink = new Prompt(deployedLinkQuestions, getDeployedLinkFormat);
+exports.lastUpdatedDate = new Prompt(lastUpdatedDateQuestions, getLastUpdatedDate);

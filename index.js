@@ -17,7 +17,7 @@ async function startPrompt() {
                 type: "checkbox",
                 message: "What sections would you like to include in your README?",
                 choices: [
-                    consts.imageName, consts.linkName, consts.updatedDateName, consts.tableOfContentsName
+                    consts.imageName, consts.deployedLinkName, consts.lastUpdateDateName, consts.tableOfContentsName
                 ]
             },
             {
@@ -53,19 +53,23 @@ async function startPrompt() {
 
 async function handleSectionCreation(sections){
     let formattedSectionsToDisplay = [];
+    
+    function addSection(section) {
+        formattedSectionsToDisplay.push(section);
+    }
 
     for(sectionName in sections) {
         let thisSectionName = sections[sectionName];
 
         switch(thisSectionName) {
             case consts.imageName:
-                formattedSectionsToDisplay.push(await prompts.image.startPrompt());
+                addSection(await prompts.image.startPrompt());
                 break;
-            case consts.linkName:
-                // formattedSectionsToDisplay.push(await prompts.)
+            case consts.deployedLinkName:
+                addSection(await prompts.deployedLink.startPrompt());
                 break;
-            case consts.updatedDateName:
-                // await prompts.
+            case consts.lastUpdateDateName:
+                addSection(await prompts.lastUpdatedDate.startPrompt());
                 break;
             case consts.tableOfContentsName:
                 break;
