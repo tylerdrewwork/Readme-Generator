@@ -62,6 +62,16 @@ const lastUpdatedDateQuestions = [
 // ANCHOR Prompt Functions
 //////////////////////////
 
+/* NOTE: efficiency/readability upgrade!
+- I changed the code here to reduce from 8 lines of code for EACH prompt
+ that was created to *2* lines of code for each prompt.
+- Before I reworked this, each prompt was it's own async function, taking up 8 lines of code...
+ I decided to take a risk in the complexity of my knowledge to make my code more DRY (scary!)
+- For the rework, I created a new constructor (Prompt), that takes in questions and desired format.
+ now, the getFormat functions take in arguments and return the desired function using rest operators! :D
+ All that I need to do in index.js is call this new object and start the prompt!
+ Awesome!!! :D
+*/
 const getImageFormat = (...args) => {
     let imageAlt = args[0]["imageAlt"];
     let imageURL = args[0]["imageURL"];
@@ -74,15 +84,15 @@ function Prompt(questions, format) {
     this.startPrompt = async function () {
         let {confirm, ...answers} = await inquirer.prompt(questions);
         if(confirm) {
-            console.log(this.format(answers));
+            return this.format(answers);
         } else {
             return this.startPrompt();
         }
     }
 }
 
-let imagePrompt2 = new Prompt(imageQuestions, getImageFormat);
-imagePrompt2.startPrompt();
+let image = new Prompt(imageQuestions, getImageFormat);
+exports.image = image;
 
 const imagePrompt = async() => {
     let {confirm, ...answers} = await inquirer.prompt(imageQuestions);

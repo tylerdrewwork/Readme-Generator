@@ -59,7 +59,7 @@ async function handleSectionCreation(sections){
 
         switch(thisSectionName) {
             case consts.imageName:
-                formattedSectionsToDisplay.push(await prompts.imagePrompt());
+                formattedSectionsToDisplay.push(await prompts.image.startPrompt());
                 break;
             case consts.linkName:
                 // formattedSectionsToDisplay.push(await prompts.)
@@ -114,4 +114,4 @@ function writeToFile(formattedSectionsToDisplay) {
     };
 }
 
-// startPrompt();
+startPrompt();
