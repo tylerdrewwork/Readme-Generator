@@ -60,10 +60,11 @@ async function handleSectionCreation(sections){
 
         switch(thisSectionName) {
             case consts.imageName:
-                await prompts.image()
-                .then((answers) => {
-                    thisSectionFormatted = consts.getImageFormat(answers.imageURL, answers.imageAlt);
-                })
+                // await prompts.image()
+                // .then((answers) => {
+                //     thisSectionFormatted = consts.getImageFormat(answers.imageURL, answers.imageAlt);
+                // })
+                formattedSectionsToDisplay.push(await prompts.imagePrompt());
                 break;
             case consts.linkName:
                 await prompts.deployedLink()
@@ -71,7 +72,26 @@ async function handleSectionCreation(sections){
                     thisSectionFormatted = consts.getDeployedLinkFormat(answers.deployedLink);
                 })
                 break;
-            case consts.imageName:
+            case consts.updatedDateName:
+                // await prompts.
+                break;
+            case consts.tableOfContentsName:
+                break;
+            case consts.installationName:
+                break;
+            case consts.usageName:
+                break;
+            case consts.currentFeaturesName:
+                break;
+            case consts.plannedFeaturesName:
+                break;
+            case consts.liscenseName:
+                break;
+            case consts.contributingName:
+                break;
+            case consts.testsName:
+                break;
+            case consts.questionsName:
                 break;
             case consts.imageName:
                 break;

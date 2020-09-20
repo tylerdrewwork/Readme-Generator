@@ -14,10 +14,10 @@ exports.questionsName = "Questions";
 let br = "\n";
 let br2 = "\n\n";
 
-exports.getImageFormat = (imageURL, imageAlt) => {
-    return `![${imageAlt}](${imageURL})` + br2;
-}
-
 exports.getDeployedLinkFormat = (deployedLink) => {
     return  `### [Click here to launch this application](${deployedLink})` + br2;
+}
+
+exports.getUpdatedDateFormat = (updatedDate) => {
+    return `### **Last Updated Date**: ${updatedDate}`;
 }
