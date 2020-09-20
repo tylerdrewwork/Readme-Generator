@@ -5,3 +5,7 @@ Wanted features:
 - choose from sections to add
 - ask if want to add a table of contents
 - ask at end if any sections should be changed
+
+
+// TODO
+add a "Done!" message at the end

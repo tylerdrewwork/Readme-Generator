@@ -34,30 +34,27 @@ const confirmPrompt = {
 
 const imageQuestions = [
     {
-        name: "imageURL",
+        name: "Image URL",
         message: "Please input the URL or path of your display image: "
     },
     {
-        name: "imageAlt",
+        name: "Image Alt",
         message: "Please input alt text for your image: "
-    },
-    { ...confirmPrompt }
+    }
 ]
 
 const deployedLinkQuestions = [
     {
-        name: "deployedLink",
+        name: "Deployed Link",
         message: "Please input the URL of your deployed application: "
-    },
-    { ...confirmPrompt }
+    }
 ]
 
 const lastUpdatedDateQuestions = [
     {
-        name: "updatedDate",
+        name: "Updated Date",
         message: "Please input the date this project was last updated: "
-    },
-    { ...confirmPrompt }
+    }
 ]
 
 //////////////////////////
@@ -84,18 +81,18 @@ const br1 = "\n";
 const br2 = "\n\n";
 
 const getImageFormat = (...args) => {
-    let imageAlt = args[0]["imageAlt"];
-    let imageURL = args[0]["imageURL"];
+    let imageAlt = args[0]["Image URL"];
+    let imageURL = args[0]["Image Alt"];
     return `![${imageAlt}](${imageURL})` + br2;
 }
 
 const getDeployedLinkFormat = (...args) => {
-    let deployedLink = args[0]["deployedLink"];
+    let deployedLink = args[0]["Deployed Link"];
     return `### [Click here to launch this application](${deployedLink})` + br2;
 }
 
 const getLastUpdatedDate = (...args) => {
-    let lastUpdatedDate = args[0]["updatedDate"];
+    let lastUpdatedDate = args[0]["Updated Date"];
     return `### **Last Updated**: ${lastUpdatedDate}` + br1;
 }
 
@@ -103,8 +100,14 @@ function Prompt(questions, format) {
     this.questions = questions;
     this.format = format;
     this.startPrompt = async function () {
-        let {confirm, ...answers} = await inquirer.prompt(questions);
-        if(confirm) {
+        // Get the answers for the actual prompt
+        let answers = await inquirer.prompt(questions);
+        for (answer in answers) {
+            console.info(answer + ": " + answers[answer]);
+        }
+        // Get the confirm answer. Restart if confirm is false!
+        let confirmObject = await inquirer.prompt(confirmPrompt);
+        if(confirmObject.confirm) {
             return this.format(answers);
         } else {
             return this.startPrompt();
