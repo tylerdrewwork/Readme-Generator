@@ -1,4 +1,5 @@
 const inquirer = require('inquirer');
+const consts = require('./consts');
 
 // FIXME Not currently working
 // exports.confirmPrompt = (message, promptToConfirm) => {
@@ -43,37 +44,66 @@ const imageQuestions = [
     { ...confirmPrompt }
 ]
 
+const deployedLinkQuestions = [
+    {
+        name: "deployedLink",
+        message: "Please input the URL of your deployed application: "
+    }
+]
+
+const lastUpdatedDateQuestions = [
+    {
+        name: "updatedDate",
+        message: "Please input the date this project was last updated: "
+    }
+]
+
 //////////////////////////
 // ANCHOR Prompt Functions
 //////////////////////////
+
+const getImageFormat = (...args) => {
+    let imageAlt = args[0]["imageAlt"];
+    let imageURL = args[0]["imageURL"];
+    return `![${imageAlt}](${imageURL})` + "\n\n";
+}
+
+function Prompt(questions, format) {
+    this.questions = questions;
+    this.format = format;
+    this.startPrompt = async function () {
+        let {confirm, ...answers} = await inquirer.prompt(questions);
+        if(confirm) {
+            console.log(this.format(answers));
+        } else {
+            return this.startPrompt();
+        }
+    }
+}
+
+let imagePrompt2 = new Prompt(imageQuestions, getImageFormat);
+imagePrompt2.startPrompt();
 
 const imagePrompt = async() => {
     let {confirm, ...answers} = await inquirer.prompt(imageQuestions);
     if(confirm) {
         return getImageFormat(answers.imageURL, answers.imageAlt);
     } else {
-        imagePrompt();
+        return imagePrompt();
     }
-}
-
-const getImageFormat = (imageURL, imageAlt) => {
-    return `![${imageAlt}](${imageURL})` + "\n\n";
 }
 
 exports.imagePrompt = imagePrompt;
 
-/*exports.deployedLink = () => inquirer.prompt([
-    {
-        name: "deployedLink",
-        message: "Please input the URL of your deployed application: "
+const deployedLinkPrompt = async() => {
+    let {confirm, ...answers} = await inquirer.prompt(deployedLinkQuestions);
+    if(confirm) {
+        return get
     }
-]);
+}
 
 exports.updatedDate = () => inquirer.prompt([
-    {
-        name: "updatedDate",
-        message: "Please input the date this project was last updated: "
-    }
+
 ]);
 
 exports.tableOfContents = async() => {
@@ -83,4 +113,4 @@ exports.tableOfContents = async() => {
             message: "",
         }
     ])
-}*/
+}

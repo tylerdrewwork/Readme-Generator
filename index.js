@@ -56,21 +56,13 @@ async function handleSectionCreation(sections){
 
     for(sectionName in sections) {
         let thisSectionName = sections[sectionName];
-        let thisSectionFormatted = "";
 
         switch(thisSectionName) {
             case consts.imageName:
-                // await prompts.image()
-                // .then((answers) => {
-                //     thisSectionFormatted = consts.getImageFormat(answers.imageURL, answers.imageAlt);
-                // })
                 formattedSectionsToDisplay.push(await prompts.imagePrompt());
                 break;
             case consts.linkName:
-                await prompts.deployedLink()
-                .then((answers) => {
-                    thisSectionFormatted = consts.getDeployedLinkFormat(answers.deployedLink);
-                })
+                // formattedSectionsToDisplay.push(await prompts.)
                 break;
             case consts.updatedDateName:
                 // await prompts.
@@ -108,8 +100,6 @@ async function handleSectionCreation(sections){
             case consts.imageName:
                 break;
         }
-
-        formattedSectionsToDisplay.push(thisSectionFormatted);
     }
 
     writeToFile(formattedSectionsToDisplay);
@@ -124,4 +114,4 @@ function writeToFile(formattedSectionsToDisplay) {
     };
 }
 
-startPrompt();
+// startPrompt();
