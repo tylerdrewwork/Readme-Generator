@@ -13,38 +13,22 @@ async function startPrompt() {
     await inquirer
         .prompt([
             {
-                name: "sectionsPrimary",
+                name: "sections",
                 type: "checkbox",
                 message: "What sections would you like to include in your README?",
                 choices: [
-                    consts.imageName, consts.deployedLinkName, consts.lastUpdateDateName, consts.tableOfContentsName
-                ]
-            },
-            {
-                name: "sectionsSecondary",
-                type: "checkbox",
-                message: "Sections continued...",
-                choices: [
-                    consts.installationName, consts.usageName, consts.currentFeaturesName, consts.plannedFeaturesName
-                ]
-            },
-            {
-                name: "sectionsTertiary",
-                type: "checkbox",
-                message: "Sections continued...",
-                choices: [
+                    new inquirer.Separator("== Headers =="),
+                    consts.imageName, consts.deployedLinkName, consts.lastUpdateDateName, consts.tableOfContentsName,
+                    new inquirer.Separator("== Details =="),
+                    consts.installationName, consts.usageName, consts.currentFeaturesName, consts.plannedFeaturesName,
+                    new inquirer.Separator("== About =="),
                     consts.liscenseName, consts.contributingName, consts.testsName, consts.questionsName
-                ]
+                ],
+                loop: true
             }
         ])
         .then( (answers) => {
-            // Put all of the answers together
-            for (let answer in answers) {
-                optionsSections = optionsSections.concat(answers[answer]);
-            }
-        })
-        .then( () => {
-            handleSectionCreation(optionsSections)
+            handleSectionCreation(answers.sections);
         })
         .catch ((err) => {
             console.error("ERROR! || ", err);
@@ -72,8 +56,10 @@ async function handleSectionCreation(sections){
                 addSection(await prompts.lastUpdatedDate.startPrompt());
                 break;
             case consts.tableOfContentsName:
+                // Add Table Of Contents
                 break;
             case consts.installationName:
+                addSection(await prompts.installation.startPrompt());
                 break;
             case consts.usageName:
                 break;

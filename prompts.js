@@ -57,6 +57,21 @@ const lastUpdatedDateQuestions = [
     }
 ]
 
+const installationQuestions = [
+    {
+        name: "Installation Instructions",
+        type: "expand",
+        message: "Please list any installation instructions: ",
+        choices: [
+            {
+                name: "test", 
+                value: "testvalue!",
+                key: "a"
+            } 
+        ]
+    }
+]
+
 //////////////////////////
 // ANCHOR Prompt Functions
 //////////////////////////
@@ -91,9 +106,13 @@ const getDeployedLinkFormat = (...args) => {
     return `### [Click here to launch this application](${deployedLink})` + br2;
 }
 
-const getLastUpdatedDate = (...args) => {
+const getLastUpdatedDateFormat = (...args) => {
     let lastUpdatedDate = args[0]["Updated Date"];
     return `### **Last Updated**: ${lastUpdatedDate}` + br1;
+}
+
+const getInstallationFormat = (...args) => {
+
 }
 
 function Prompt(questions, format) {
@@ -117,4 +136,5 @@ function Prompt(questions, format) {
 
 exports.image = new Prompt(imageQuestions, getImageFormat);
 exports.deployedLink = new Prompt(deployedLinkQuestions, getDeployedLinkFormat);
-exports.lastUpdatedDate = new Prompt(lastUpdatedDateQuestions, getLastUpdatedDate);
+exports.lastUpdatedDate = new Prompt(lastUpdatedDateQuestions, getLastUpdatedDateFormat);
+exports.installation = new Prompt(installationQuestions, getInstallationFormat);
