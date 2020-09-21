@@ -6,7 +6,7 @@ inquirer.registerPrompt('selectLine', require('inquirer-select-line'));
 // ANCHOR Prompt Questions
 //////////////////////////
 
-const confirmPrompt = {
+const confirmQuestion = {
     type: "confirm", 
     name: "confirm",
     message: style.confirm("Is this correct? "),
@@ -45,11 +45,11 @@ const installationQuestions = [
         message: style.textQuestion("Installation Instructions: "),
         choices: [
             {
-                name: "Add New Instruction",
+                name: "ADD NEW",
                 value: "new"
             },
             {
-                name: "Done With Instructions",
+                name: "FINISH",
                 value: "done"
             }
         ]
@@ -66,9 +66,6 @@ const installationQuestions = [
     }
 ]
 
-//////////////////////////
-// ANCHOR Prompt Functions
-//////////////////////////
 
 /* NOTE: efficiency/readability upgrade!
 -- Reduced EACH prompt code from 10+ lines to 1(!!) line of code each -- without sacrificing readability.
@@ -76,13 +73,17 @@ const installationQuestions = [
 - You can see this in the exports for these prompts.
 
 - Before I reworked this, each prompt was it's own async function, taking up 8 lines of code...
- I decided to take a risk in the complexity of my knowledge to make my code more DRY (scary!)
- 
+I decided to take a risk in the complexity of my knowledge to make my code more DRY (scary!)
+
 - For the rework, I created a new constructor (Prompt), that takes in questions and desired format.
- now, the getFormat functions take in arguments and return the desired function using rest operators! :D
- All that I need to do in index.js is call this new object and start the prompt!
- Awesome!!! :D
+now, the getFormat functions take in arguments and return the desired function using rest operators! :D
+All that I need to do in index.js is call this new object and start the prompt!
+Awesome!!! :D
 */
+
+//////////////////////////
+// ANCHOR Prompt Formats
+//////////////////////////
 
 const br1 = "\n";
 const br2 = "\n\n";
@@ -103,33 +104,40 @@ const getLastUpdatedDateFormat = (...args) => {
     return `### **Last Updated**: ${lastUpdatedDate}` + br1;
 }
 
+//////////////////////////
+// ANCHOR Prompt Functions
+//////////////////////////
+
 async function installationPrompt() {
-    await inquirer.prompt(installationQuestions)
-    .then((answers) => {
-        if(answers["Installation New Line"]) {
-            console.log(answers["Installation New Line"]);
+    let answers = await inquirer.prompt(installationQuestions)
+    if(answers["Installation New Line"]) {
+        console.info(answers["Installation New Line"]);
+        
+        await installationPrompt();
+    }
+    // .then((answers) => {
+    //     if(answers["Installation New Line"]) {
+    //         console.info(answers["Installation New Line"]);
             
-            installationPrompt();
-        }
-    });
+    //         installationPrompt();
+    //     }
+    // });
 }
 
 const getInstallationFormat = (...args) => {
     
 }
 
-function Prompt(questions, format, altFunction) {
+function Prompt(questions, format) {
     this.questions = questions;
     this.format = format;
-    this.altFunction = altFunction;
     this.startPrompt = async function () {
-        // Get the answers for the actual prompt. If altFunction exists, use that instead.
-        if(!altFunction) {
-            let answers = await inquirer.prompt(questions);
-        } else {
-            let answers = await this.altFunction();
-        }
+        let answers = await inquirer.prompt(questions);
+        confirmPrompt(answers);
+    }
+}
 
+async function confirmPrompt(answers) {
         // Get the confirm answer, check if it's right!. Restart if confirm is false!
         for (answer in answers) {
             console.info(answer + ": " + answers[answer]);
@@ -140,10 +148,12 @@ function Prompt(questions, format, altFunction) {
         } else {
             return this.startPrompt();
         }
-    }
 }
 
 exports.image = new Prompt(imageQuestions, getImageFormat);
 exports.deployedLink = new Prompt(deployedLinkQuestions, getDeployedLinkFormat);
 exports.lastUpdatedDate = new Prompt(lastUpdatedDateQuestions, getLastUpdatedDateFormat);
-exports.installation = new Prompt(installationQuestions, getInstallationFormat, installationPrompt);
+
+let installation = new Prompt(installationQuestions, getInstallationFormat);
+installation.startPrompt = async function () { await installationPrompt(); }
+exports.installation = installation;
