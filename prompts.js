@@ -1,26 +1,6 @@
 const inquirer = require('inquirer');
 const consts = require('./consts');
 
-// FIXME Not currently working
-// exports.confirmPrompt = (message, promptToConfirm) => {
-//     console.log(`Verify: "${message}"`);
-//     inquirer.prompt([
-//         {
-//             name: "confirmPrompt",
-//             message: "Is the above correct?",
-//             type: 'confirm'
-//         }
-//     ]).then((answers) => {
-//         console.log("confirm prompt answer: ", answers["confirmPrompt"]);
-//         let answer = answers["confirmPrompt"];
-//         if(answers["confirmPrompt"] === true) {
-//             return;
-//         } else {
-//             promptToConfirm();
-//         }
-//     });
-// }
-
 //////////////////////////
 // ANCHOR Prompt Questions
 //////////////////////////
@@ -63,7 +43,7 @@ const installationQuestions = [
         type: "list",
         message: "Please list any installation instructions: ",
         choices: function (answers) {
-            
+
         }
     }
 ]

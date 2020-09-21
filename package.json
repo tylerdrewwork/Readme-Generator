@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/Sakiskid/Readme-Generator#readme",
   "dependencies": {
+    "canvas": "^2.6.1",
     "cli-color": "^2.0.0",
     "inquirer": "^7.3.3"
   }
