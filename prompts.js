@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const style = require('./styling');
+inquirer.registerPrompt('selectLine', require('inquirer-select-line'));
 
 //////////////////////////
 // ANCHOR Prompt Questions
@@ -8,42 +9,59 @@ const style = require('./styling');
 const confirmPrompt = {
     type: "confirm", 
     name: "confirm",
-    message: "Is this correct? ",
+    message: style.confirm("Is this correct? "),
     default: true
 }
 
 const imageQuestions = [
     {
         name: "Image URL",
-        message: style.textQuestion("Please input the URL or path of your display image: ")
+        message: style.textQuestion("Please input the URL or path of your display image: \n")
     },
     {
         name: "Image Alt",
-        message: "Please input alt text for your image: "
+        message: style.textQuestion("Please input alt text for your image: ")
     }
 ]
 
 const deployedLinkQuestions = [
     {
         name: "Deployed Link",
-        message: "Please input the URL of your deployed application: "
+        message: style.textQuestion("Please input the URL of your deployed application: ")
     }
 ]
 
 const lastUpdatedDateQuestions = [
     {
         name: "Updated Date",
-        message: "Please input the date this project was last updated: "
+        message: style.textQuestion("Please input the date this project was last updated: ")
     }
 ]
 
 const installationQuestions = [
     {
-        name: "Installation Instructions",
+        name: "Installation Main",
         type: "list",
-        message: "Please list any installation instructions: ",
-        choices: function (answers) {
-
+        message: style.textQuestion("Installation Instructions: "),
+        choices: [
+            {
+                name: "Add New Instruction",
+                value: "new"
+            },
+            {
+                name: "Done With Instructions",
+                value: "done"
+            }
+        ]
+    },
+    {
+        name: "Installation New Line",
+        type: "input",
+        message: "Input new instruction: \n",
+        when: (answers) => {
+            if (answers["Installation Main"] === "new") {
+                return true;
+            } else return false;
         }
     }
 ]
@@ -55,9 +73,7 @@ const installationQuestions = [
 /* NOTE: efficiency/readability upgrade!
 -- Reduced EACH prompt code from 10+ lines to 1(!!) line of code each -- without sacrificing readability.
 
-- I changed the code here to reduce from 10+ lines of code for EACH prompt
- that was created to *2* lines of code for each prompt.
- You can see this in the exports for these prompts.
+- You can see this in the exports for these prompts.
 
 - Before I reworked this, each prompt was it's own async function, taking up 8 lines of code...
  I decided to take a risk in the complexity of my knowledge to make my code more DRY (scary!)
@@ -87,20 +103,37 @@ const getLastUpdatedDateFormat = (...args) => {
     return `### **Last Updated**: ${lastUpdatedDate}` + br1;
 }
 
-const getInstallationFormat = (...args) => {
-
+async function installationPrompt() {
+    await inquirer.prompt(installationQuestions)
+    .then((answers) => {
+        if(answers["Installation New Line"]) {
+            console.log(answers["Installation New Line"]);
+            
+            installationPrompt();
+        }
+    });
 }
 
-function Prompt(questions, format) {
+const getInstallationFormat = (...args) => {
+    
+}
+
+function Prompt(questions, format, altFunction) {
     this.questions = questions;
     this.format = format;
+    this.altFunction = altFunction;
     this.startPrompt = async function () {
-        // Get the answers for the actual prompt
-        let answers = await inquirer.prompt(questions);
+        // Get the answers for the actual prompt. If altFunction exists, use that instead.
+        if(!altFunction) {
+            let answers = await inquirer.prompt(questions);
+        } else {
+            let answers = await this.altFunction();
+        }
+
+        // Get the confirm answer, check if it's right!. Restart if confirm is false!
         for (answer in answers) {
             console.info(answer + ": " + answers[answer]);
         }
-        // Get the confirm answer. Restart if confirm is false!
         let confirmObject = await inquirer.prompt(confirmPrompt);
         if(confirmObject.confirm) {
             return this.format(answers);
@@ -113,4 +146,4 @@ function Prompt(questions, format) {
 exports.image = new Prompt(imageQuestions, getImageFormat);
 exports.deployedLink = new Prompt(deployedLinkQuestions, getDeployedLinkFormat);
 exports.lastUpdatedDate = new Prompt(lastUpdatedDateQuestions, getLastUpdatedDateFormat);
-exports.installation = new Prompt(installationQuestions, getInstallationFormat);
+exports.installation = new Prompt(installationQuestions, getInstallationFormat, installationPrompt);
