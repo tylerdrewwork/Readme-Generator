@@ -1,5 +1,6 @@
 const fs = require("fs");
 const inquirer = require('inquirer');
+const { pathToFileURL } = require("url");
 const util = require('util');
 
 const consts = require('./consts');
@@ -20,16 +21,17 @@ async function startPrompt() {
             {
                 name: "sections",
                 type: "checkbox",
-                message: "What sections would you like to include in your README?",
+                message: style.textQuestion("What sections would you like to include in your README?") + "\n",
                 choices: [
-                    new inquirer.Separator("== Headers =="),
+                    new inquirer.Separator(style.textH2("== Headers ==")),
                     consts.imageName, consts.deployedLinkName, consts.lastUpdateDateName, consts.tableOfContentsName,
-                    new inquirer.Separator("== Details =="),
+                    new inquirer.Separator(style.textH2("== Details ==")),
                     consts.installationName, consts.usageName, consts.currentFeaturesName, consts.plannedFeaturesName,
-                    new inquirer.Separator("== About =="),
+                    new inquirer.Separator(style.textH2("== About ==")),
                     consts.liscenseName, consts.contributingName, consts.testsName, consts.questionsName
                 ],
-                loop: true
+                loop: true,
+                pageSize: 16,
             }
         ])
         .then( (answers) => {
@@ -108,6 +110,15 @@ function writeToFile(formattedSectionsToDisplay) {
     for (formattedSection in formattedSectionsToDisplay) {
         appendFileAsync("./README.md", formattedSectionsToDisplay[formattedSection]);
     };
+
+    LogEndOfApplication();
+}
+
+function LogEndOfApplication() {
+    style.consoleClear();
+    console.info("Thank you for using The Ultimate README Generator! \n");
+    console.info("You can find your README here: \n" + pathToFileURL("./README.md"));
+    console.info("\n\nCreated by Tyler D Smith, Sept 2020. (www.github.com/sakiskid)");
 }
 
 startPrompt();

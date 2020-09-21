@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const consts = require('./consts');
+const style = require('./styling');
 
 //////////////////////////
 // ANCHOR Prompt Questions
@@ -15,7 +15,7 @@ const confirmPrompt = {
 const imageQuestions = [
     {
         name: "Image URL",
-        message: "Please input the URL or path of your display image: "
+        message: style.textQuestion("Please input the URL or path of your display image: ")
     },
     {
         name: "Image Alt",
