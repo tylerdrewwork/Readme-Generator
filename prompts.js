@@ -327,46 +327,45 @@ function ListPrompt(questions, format, isNumbered) {
 
         // If the user chose to edit a line:
         if(answers["Edit"]) {
-            if(answers["Edit"] === "cancel") {
+            let editAnswer = answers["Edit"];
+            if(editAnswer === "cancel") {
                 // Do nothing on cancel
             }
-            if(answers["Edit"] === "delete") {
+            if(editAnswer === "delete") {
                 // Delete at the index of the chosen list object
                 if(answers["Edit - Delete"] === true) { choices.splice(indexChosen, 1); }
                 addOrderNumbers();
             }
-            if(answers["Edit"] === "order") {
+            if(editAnswer === "order") {
                 let validChoices = answers["Edit - Order"]; // This is the valid choices from the order question, not including the "new" and "finish" options
                 let instruction = choices.splice(installationMainAnswer, 1);
                 choices.splice(answers["Edit - Order"] + 1, 0, instruction[0]);
                 console.log(`Order info... ${instruction[0]} || edit - order answer + 1: ${answers["Edit - Order"] + 1}`)
                 addOrderNumbers();
             }
-            if(answers["Edit"] === "text") {
-                let newText = answers["Edit - Text"];
-                let choice = choices.find(element => {
-                    if (element["value"] == installationMainAnswer) {
-                        return element;
-                    }
-                    console.log(element);
-                })
+            if(editAnswer === "text") {
+                let textAnswer = answers["Edit - Text"];
+                let objectToChange = listElements.find(
+                    element => element.value === mainAnswer)
+                objectToChange.value = textAnswer;
                 // console.log(choices[0]);
                 // console.log("choices: ", choices);
                 // console.log(installationMainAnswer);
-                choice["name"] = newText;
+                // choice["name"] = newText;
                 addOrderNumbers();
             }
-            await installationPrompt();
+            await this.startPrompt();
         }
 
         function addOrderNumbers() {
-            // let validChoices = choices.slice(1, choices.length - 1);
-            // let i = 1;
-            // for(choice in validChoices) {
-            //     let value = validChoices[choice]["value"];
-            //     validChoices[choice]["name"] = `${i}. ${value}`;
-            //     i++;
-            // }
+            for(let i = 0; i < listElements.length; i++) {
+                let thisElement = listElements[i];
+                if(isNumbered == true) {
+                    thisElement.name = `${i + 1}. ${thisElement.value}`;
+                } else {
+                    thisElement.name = `- ${thisElement.value}`;
+                }
+            }
         }
     }
 }
