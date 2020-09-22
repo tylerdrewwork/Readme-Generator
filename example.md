@@ -16,6 +16,6 @@
 
 ## Usage
 
-## Liscense
+## license
 
 ## Features:

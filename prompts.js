@@ -161,7 +161,20 @@ const currentFeaturesQuestions = []
 
 const plannedFeaturesQuestions = []
 
-const liscenseQuestions = []
+const licenseQuestions = [
+    {
+        name: "License",
+        type: "list",
+        message: "Choose a license: ",
+        choices: [
+            // "GNU AGPLv3" + "",
+            {
+                name: "testie!",
+                short: "shorty!"
+            }
+        ]
+    }
+]
 
 const contributingQuestions = []
 
@@ -215,16 +228,17 @@ const getUsageFormat = (list) => {
     return getListFormat("## Usage", consts.usageName, list);
 }
 
-const getCurrentFeaturesFormat = (...args) => {
-    
+const getCurrentFeaturesFormat = (list) => {
+    return getListFormat("## Current Features", consts.currentFeaturesName, list);
 }
 
 const getPlannedFeaturesFormat = (...args) => {
-
+    return getListFormat("## Planned Features", consts.plannedFeaturesName, list);
 }
 
-const getLiscenseFormat = (...args) => {
-    
+const getlicenseFormat = (...args) => {
+    let license = args[0]["License"];
+    getRefTag(consts.tagify(consts.licenseName) + `## **License**: ${license}`);
 }
 
 const getContributingFormat = (...args) => {
@@ -256,7 +270,7 @@ const getRefTag = (name) => {
 // ANCHOR Prompt Functions
 //////////////////////////
 
-function ListPrompt(name, format, isNumbered) {
+function ListPrompt(name, format) {
     this.name = name;
     this.format = format;
     this.resetListElements = function () { 
@@ -421,12 +435,12 @@ exports.deployedLink = new Prompt(deployedLinkQuestions, getDeployedLinkFormat);
 exports.lastUpdatedDate = new Prompt(lastUpdatedDateQuestions, getLastUpdatedDateFormat);
 exports.usage = new ListPrompt(consts.usageName, getUsageFormat);
 exports.installation = new ListPrompt(consts.installationName, getInstallationFormat);
-// exports.currentFeatures = 
-// exports.plannedFeatures = 
-// exports.liscense = 
-// exports.contributing = 
-// exports.tests = 
-// exports.contact = 
+exports.currentFeatures = new ListPrompt(consts.currentFeaturesName, getCurrentFeaturesFormat)
+exports.plannedFeatures = new ListPrompt(consts.plannedFeaturesName, getPlannedFeaturesFormat);
+exports.license = new Prompt(licenseQuestions, getlicenseFormat);
+exports.contributing = 
+exports.tests = 
+exports.contact = 
 
 // Special Case Prompt Exports
 
