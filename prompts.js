@@ -1,3 +1,4 @@
+const { indexOf } = require('cli-color/beep');
 const inquirer = require('inquirer');
 const Choices = require('inquirer/lib/objects/choices');
 const style = require('./styling');
@@ -13,6 +14,96 @@ const confirmQuestion = {
     message: style.confirm("Is this correct? "),
     default: true
 }
+
+// listElements is important! ListPrompt() accesses and changes this for listQuestions.
+let listElements = [];
+const listQuestions = [
+    {
+        name: "Main",
+        type: "list",
+        message: style.textQuestion("Please configure: "),
+        choices: () => {
+            let newChoices = [
+                {
+                    name: "ADD NEW",
+                    value: "new"
+                },
+                {
+                    name: "FINISH",
+                    value: "done"
+                },
+                new inquirer.Separator(), // Separato
+            ]
+            for (let i = 0; i < listElements.length; i++) {
+                newChoices.push(listElements[i]);
+            }
+            return newChoices;
+        } 
+    },
+    {
+        name: "New Line",
+        type: "input",
+        message: "Input new line: \n",
+        when: (answers) => { // If the installation main value is new...
+            if (answers["Main"] === "new") {
+                return true;
+            } else return false;
+        }
+    },
+    {
+        name: "Edit",
+        type: "list",
+        message: "How would you like to edit this line?",
+        when: (answers) => { // If the user chose to edit a line...
+            if (answers["Main"] !== "done" && answers["Main"] !== "new") {
+                return true;
+            } else return false;
+        },
+        choices: [
+            {
+                name: "Cancel",
+                value: "cancel",
+            },
+            {
+                name: "Edit Text",
+                value: "text",
+            },
+            {
+                name: "Change order",
+                value: "order",
+            },
+            {
+                name: "Delete",
+                value: "delete",
+            },
+        ]
+    },
+    {
+        name: "Edit - Text",
+        type: "input",
+        message: "Please change text: ",
+        when: (answers) => { if (answers["Edit"] === "text") return true; }
+    },
+    {
+        name: "Edit - Order",
+        type: "selectLine",
+        message: "Please change order: ",
+        when: (answers) => { if (answers["Edit"] === "order") return true; },
+        choices: () => {
+            let choices = installationQuestions[0].choices;
+            let validChoices = choices.map(object => object.name);
+            validChoices = validChoices.slice(1, choices.length - 1);
+            console.log("SelectLine valid choices: ", validChoices);
+            return validChoices;
+        },
+    },
+    {
+        name: "Edit - Delete",
+        type: "confirm",
+        message: style.confirm("Are you sure you want to delete this line?"),
+        when: (answers) => { if (answers["Edit"] === "delete") return true; }
+    },
+]
 
 const imageQuestions = [
     {
@@ -41,83 +132,10 @@ const lastUpdatedDateQuestions = [
 
 const installationQuestions = [
     {
-        name: "Installation Main",
-        type: "list",
-        message: style.textQuestion("Installation Instructions: "),
-        choices: [
-            {
-                name: "ADD NEW",
-                value: "new"
-            },
-            {
-                name: "FINISH",
-                value: "done"
-            }
-        ]
+        name: "Installation",
+        message: "Please list installation instructions",
     },
-    {
-        name: "Installation New Line",
-        type: "input",
-        message: "Input new instruction: \n",
-        when: (answers) => { // If the installation main value is new...
-            if (answers["Installation Main"] === "new") {
-                return true;
-            } else return false;
-        }
-    },
-    {
-        name: "Edit Instruction",
-        type: "list",
-        message: "How would you like to edit this line?",
-        when: (answers) => { // If the user chose to edit a line...
-            if (answers["Installation Main"] !== "done" && answers["Installation Main"] !== "new") {
-                return true;
-            } else return false;
-        },
-        choices: [
-            {
-                name: "Cancel",
-                value: "cancel",
-            },
-            {
-                name: "Edit Text",
-                value: "text",
-            },
-            {
-                name: "Change order",
-                value: "order",
-            },
-            {
-                name: "Delete",
-                value: "delete",
-            },
-        ]
-    },
-    {
-        name: "Edit - Text",
-        type: "input",
-        message: "Please change text: ",
-        when: (answers) => { if (answers["Edit Instruction"] === "text") return true; }
-    },
-    {
-        name: "Edit - Order",
-        type: "selectLine",
-        message: "Please change order: ",
-        when: (answers) => { if (answers["Edit Instruction"] === "order") return true; },
-        choices: () => {
-            let choices = installationQuestions[0].choices;
-            let validChoices = choices.map(object => object.name);
-            validChoices = validChoices.slice(1, choices.length - 1);
-            console.log("SelectLine valid choices: ", validChoices);
-            return validChoices;
-        },
-    },
-    {
-        name: "Edit - Delete",
-        type: "confirm",
-        message: style.confirm("Are you sure you want to delete this line?"),
-        when: (answers) => { if (answers["Edit Instruction"] === "delete") return true; }
-    },
+    ...listQuestions,
 ]
 
 const usageQuestions = [
@@ -280,6 +298,77 @@ async function installationPrompt() {
 function ListPrompt(questions, format, isNumbered) {
     this.questions = questions;
     this.format = format;
+    this.isNumbered = isNumbered;
+    this.resetListElements = function () { 
+        listElements = [] 
+    };
+    this.resetListElements();
+    this.startPrompt = async function () {
+        let answers = await inquirer.prompt(questions);
+        
+        let mainAnswer = answers["Main"];
+        console.log("Answers: ", answers);
+        console.log("listElements[]: ", listElements);
+        
+        // If the user chose to add a new line:
+        if(mainAnswer === "new") { 
+            let newLineAnswer = answers["New Line"];
+            let newLine = {
+                name: newLineAnswer,
+                value: newLineAnswer,
+            }
+            // Put this at the end of the list
+            listElements.push(newLine);
+            // Put order numbers or bullet points on it
+            addOrderNumbers();
+            // Then restart prompt
+            await this.startPrompt();
+        }
+
+        // If the user chose to edit a line:
+        if(answers["Edit"]) {
+            if(answers["Edit"] === "cancel") {
+                // Do nothing on cancel
+            }
+            if(answers["Edit"] === "delete") {
+                // Delete at the index of the chosen list object
+                if(answers["Edit - Delete"] === true) { choices.splice(indexChosen, 1); }
+                addOrderNumbers();
+            }
+            if(answers["Edit"] === "order") {
+                let validChoices = answers["Edit - Order"]; // This is the valid choices from the order question, not including the "new" and "finish" options
+                let instruction = choices.splice(installationMainAnswer, 1);
+                choices.splice(answers["Edit - Order"] + 1, 0, instruction[0]);
+                console.log(`Order info... ${instruction[0]} || edit - order answer + 1: ${answers["Edit - Order"] + 1}`)
+                addOrderNumbers();
+            }
+            if(answers["Edit"] === "text") {
+                let newText = answers["Edit - Text"];
+                let choice = choices.find(element => {
+                    if (element["value"] == installationMainAnswer) {
+                        return element;
+                    }
+                    console.log(element);
+                })
+                // console.log(choices[0]);
+                // console.log("choices: ", choices);
+                // console.log(installationMainAnswer);
+                choice["name"] = newText;
+                addOrderNumbers();
+            }
+            await installationPrompt();
+        }
+
+        function addOrderNumbers() {
+            // let validChoices = choices.slice(1, choices.length - 1);
+            // let i = 1;
+            // for(choice in validChoices) {
+            //     let value = validChoices[choice]["value"];
+            //     validChoices[choice]["name"] = `${i}. ${value}`;
+            //     i++;
+            // }
+        }
+    }
 }
 
 function Prompt(questions, format) {
@@ -311,14 +400,14 @@ exports.deployedLink = new Prompt(deployedLinkQuestions, getDeployedLinkFormat);
 exports.lastUpdatedDate = new Prompt(lastUpdatedDateQuestions, getLastUpdatedDateFormat);
 exports.usage = new Prompt(usageQuestions, getUsageFormat);
 // exports.currentFeatures = 
-exports.plannedFeatures = 
-exports.liscense = 
-exports.contributing = 
-exports.tests = 
-exports.contact = 
+// exports.plannedFeatures = 
+// exports.liscense = 
+// exports.contributing = 
+// exports.tests = 
+// exports.contact = 
 
 // Special Case Prompt Exports
 
-let installation = new Prompt(installationQuestions, getInstallationFormat);
-installation.startPrompt = async function () { await installationPrompt(); }
-exports.installation = installation;
+exports.installation = new ListPrompt(listQuestions, getInstallationFormat, true);
+// installation.startPrompt = async function () { await installationPrompt(); }
+// exports.installation = installation;
