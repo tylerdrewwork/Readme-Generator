@@ -328,30 +328,32 @@ function ListPrompt(questions, format, isNumbered) {
         // If the user chose to edit a line:
         if(answers["Edit"]) {
             let editAnswer = answers["Edit"];
+            let listObjectToEdit = listElements.find(
+                element => element.value === mainAnswer);
+            let listObjectToEditIndex = listElements.findIndex(
+                element => element.value === mainAnswer);
+
             if(editAnswer === "cancel") {
                 // Do nothing on cancel
             }
             if(editAnswer === "delete") {
                 // Delete at the index of the chosen list object
-                if(answers["Edit - Delete"] === true) { choices.splice(indexChosen, 1); }
+                if(answers["Edit - Delete"] === true) { 
+                    listElements.splice(listObjectToEditIndex, 1);
+                }
                 addOrderNumbers();
             }
             if(editAnswer === "order") {
-                let validChoices = answers["Edit - Order"]; // This is the valid choices from the order question, not including the "new" and "finish" options
-                let instruction = choices.splice(installationMainAnswer, 1);
-                choices.splice(answers["Edit - Order"] + 1, 0, instruction[0]);
-                console.log(`Order info... ${instruction[0]} || edit - order answer + 1: ${answers["Edit - Order"] + 1}`)
+
+                // let validChoices = answers["Edit - Order"]; // This is the valid choices from the order question, not including the "new" and "finish" options
+                // let instruction = choices.splice(installationMainAnswer, 1);
+                // choices.splice(answers["Edit - Order"] + 1, 0, instruction[0]);
+                // console.log(`Order info... ${instruction[0]} || edit - order answer + 1: ${answers["Edit - Order"] + 1}`)
                 addOrderNumbers();
             }
             if(editAnswer === "text") {
                 let textAnswer = answers["Edit - Text"];
-                let objectToChange = listElements.find(
-                    element => element.value === mainAnswer)
-                objectToChange.value = textAnswer;
-                // console.log(choices[0]);
-                // console.log("choices: ", choices);
-                // console.log(installationMainAnswer);
-                // choice["name"] = newText;
+                listObjectToEdit.value = textAnswer;
                 addOrderNumbers();
             }
             await this.startPrompt();
