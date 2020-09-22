@@ -99,24 +99,15 @@ const listQuestions = [
         type: "selectLine",
         message: "Please change order: ",
         when: (answers) => { if (answers["Edit"] === "order") return true; },
+        // placeholder: (answers) => answers["Main"],
         choices: (answers) => {
-            // Take the element out of the list to display for more accurate reordering
-            let elementsToDisplay = listElements;
-            elementsToDisplay.splice(listElements.findIndex(element => element.value === answers["Main"]), 1);
-            
+            // Take the element out of the new DISPLAY list to display for more accurate reordering
+            let elementsToDisplay = [ ...listElements ];
+            elementsToDisplay.splice(listElements.findIndex(element => element.value === answers["Main"]), 1);            
             // Get an array of names from the objects
-            let listElementNames = listElements.map(element => element.name);
+            let listElementNames = elementsToDisplay.map(element => element.name);
 
-
-            console.log("editorder answers" , answers,)
-            // console.log("elementToReorder: ", elementToReorder);
-            updateOrderPrefixForListPrompt();
             return listElementNames;
-            // let choices = installationQuestions[0].choices;
-            // let validChoices = choices.map(object => object.name);
-            // validChoices = validChoices.slice(1, choices.length - 1);
-            // console.log("SelectLine valid choices: ", validChoices);
-            // return validChoices;
         },
     },
     {
@@ -353,7 +344,7 @@ function ListPrompt(questions, format, isNumbered) {
             await this.startPrompt();
         }
 
-        // If the user chose to edit a line:
+        // EDITING A LINE:
         if(answers["Edit"]) {
             let editAnswer = answers["Edit"];
             let listObjectToEdit = listElements.find(
@@ -373,27 +364,25 @@ function ListPrompt(questions, format, isNumbered) {
 
             else if(editAnswer === "order") {
                 let orderAnswer = answers["Edit - Order"];
-                // let elementToMove = listElements
-                // let validChoices = answers["Edit - Order"]; 
-                // This is the valid choices from the order question, not including the "new" and "finish" options
-                // let instruction = choices.splice(installationMainAnswer, 1);
-                // choices.splice(answers["Edit - Order"] + 1, 0, instruction[0]);
-                // console.log(`Order info... ${instruction[0]} || edit - order answer + 1: ${answers["Edit - Order"] + 1}`)
 
-                let objectToReorder = listElements.splice(listObjectToEditIndex);
-                //  0 1 2 3 4   | index
-                //  a b c d e   | element
-                // 0 1 2 3 4 5  | line
-                //  -------> take out c
-                //  0 1 2 3
-                //  a b d e
-                // 0 1 2 3 4 
-                //  -------> c to line 1. (it would splice into index 1)
-                //  0 1 2 3 4
-                //  a c b d e
-                // 0 1 2 3 4 5
+                // Get Object that we are reordering, and remove it from the list
+                let objectToReorder = listElements[listObjectToEditIndex];
+                listElements.splice(listObjectToEditIndex, 1);
+
+                /* NOTE Here is a small diagram I made to help myself figure out this algorithm.
+                I thought it was neat, so I left it in! :)
+                    0 1 2 3 4   | index
+                    a b c d e   | element
+                    0 1 2 3 4 5 | line
+                    -------> take out c
+                    0 1 2 3
+                    a b d e
+                    0 1 2 3 4 
+                    -------> c to line 1. (it would splice into index 1)
+                    0 1 2 3 4
+                    a c b d e
+                    0 1 2 3 4 5 */
                 listElements.splice(orderAnswer, 0, objectToReorder);
-
                 console.log(orderAnswer);
                 updateOrderPrefixForListPrompt();
             }
