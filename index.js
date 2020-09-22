@@ -64,38 +64,31 @@ async function handleSectionCreation(sections){
                 addSection(await prompts.lastUpdatedDate.startPrompt());
                 break;
             case consts.tableOfContentsName:
-                // Add Table Of Contents
+                // TODO Add Table Of Contents
                 break;
             case consts.installationName:
                 addSection(await prompts.installation.startPrompt());
                 break;
             case consts.usageName:
+                addSection(await prompts.usage.startPrompt());
                 break;
             case consts.currentFeaturesName:
+                addSection(await prompts.currentFeatures.startPrompt());
                 break;
             case consts.plannedFeaturesName:
+                addSection(await prompts.plannedFeatures.startPrompt());
                 break;
             case consts.liscenseName:
+                addSection(await prompts.liscense.startPrompt());
                 break;
             case consts.contributingName:
+                addSection(await prompts.contributing.startPrompt());
                 break;
             case consts.testsName:
+                addSection(await prompts.tests.startPrompt());
                 break;
             case consts.questionsName:
-                break;
-            case consts.imageName:
-                break;
-            case consts.imageName:
-                break;
-            case consts.imageName:
-                break;
-            case consts.imageName:
-                break;
-            case consts.imageName:
-                break;
-            case consts.imageName:
-                break;
-            case consts.imageName:
+                addSection(await prompts.questions.startPrompt());
                 break;
         }
     }

@@ -120,6 +120,25 @@ const installationQuestions = [
     },
 ]
 
+const usageQuestions = [
+    {
+        name: "Usage",
+        message: style.textQuestion("Please input usage information: ")
+    }
+]
+
+const currentFeaturesQuestions = []
+
+const plannedFeaturesQuestions = []
+
+const liscenseQuestions = []
+
+const contributingQuestions = []
+
+const testsQuestions = []
+
+const contactQuestions = []
+
 
 /* NOTE: efficiency/readability upgrade!
 -- Reduced EACH prompt code from 10+ lines to 1(!!) line of code each -- without sacrificing readability.
@@ -159,6 +178,35 @@ const getLastUpdatedDateFormat = (...args) => {
 }
 
 const getInstallationFormat = (...args) => {
+    // TODO add installation format
+}
+
+const getUsageFormat = (...args) => {
+    let usage = args[0]["Usage"];
+    return `## **Usage**: ${usage}` + br1;
+}
+
+const getCurrentFeaturesFormat = (...args) => {
+    
+}
+
+const getPlannedFeaturesFormat = (...args) => {
+
+}
+
+const getLiscenseFormat = (...args) => {
+    
+}
+
+const getContributingFormat = (...args) => {
+    
+}
+
+const getTestsFormat = (...args) => {
+    
+}
+
+const getContactFormat = (...args) => {
     
 }
 
@@ -251,9 +299,20 @@ async function confirmPrompt(answers) {
         }
 }
 
+// Prompt Exports
+
 exports.image = new Prompt(imageQuestions, getImageFormat);
 exports.deployedLink = new Prompt(deployedLinkQuestions, getDeployedLinkFormat);
 exports.lastUpdatedDate = new Prompt(lastUpdatedDateQuestions, getLastUpdatedDateFormat);
+exports.usage = new Prompt(usageQuestions, getUsageFormat);
+// exports.currentFeatures = 
+exports.plannedFeatures = 
+exports.liscense = 
+exports.contributing = 
+exports.tests = 
+exports.contact = 
+
+// Special Case Prompt Exports
 
 let installation = new Prompt(installationQuestions, getInstallationFormat);
 installation.startPrompt = async function () { await installationPrompt(); }
