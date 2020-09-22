@@ -208,9 +208,11 @@ const getLastUpdatedDateFormat = (...args) => {
 
 const getInstallationFormat = (...args) => {
     let instructionsFormatted = "## Installation";
+    let instructions = args[0];
     console.log(instructionsFormatted);
-    for (let i = 0; i < args.length; i++) {
-        instructionsFormatted = instructionsFormatted + "\n" + args[i];
+    console.log("args length", instructions);
+    for (let i = 0; i < instructions.length; i++) {
+        instructionsFormatted = instructionsFormatted + "\n" + instructions[i];
        console.log(instructionsFormatted);
     }
     console.log(instructionsFormatted);
@@ -351,7 +353,7 @@ function updateOrderPrefixForListPrompt() {
         let thisElement = listElements[i];
         let prefix = "";
         if(prefixSymbol === "number") {
-            prefix = `${i}. `;
+            prefix = `${i + 1}. `;
         } 
         else if (prefixSymbol === "alphabet") {
             prefix = `${alphabet[i]}. `;

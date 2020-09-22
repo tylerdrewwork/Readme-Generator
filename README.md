@@ -1,2 +1,4 @@
 ## Installation
-0. awd,1. efsa,2. gsr
+0. awd
+1. wer
+2. er
