@@ -245,69 +245,6 @@ const getContactFormat = (...args) => {
 // ANCHOR Prompt Functions
 //////////////////////////
 
-async function installationPrompt() {
-    // FIXME ordering & text editing... it's a mess
-    let answers = await inquirer.prompt(installationQuestions) // Start prompt
-    let installationMainAnswer = answers["Installation Main"];
-    let choices = installationQuestions[0].choices;
-    
-    // If the user chose to add a new line:
-    if(answers["Installation New Line"]) { 
-        let newLineName = answers["Installation New Line"];
-        let newLine = {
-            name: newLineName,
-            value: newLineName,
-        }
-        choices.splice(choices.length - 1, 0, newLine);
-        addOrderNumbers();
-        await installationPrompt();
-    }
-
-    if(installationMainAnswer) {}
-
-    if(answers["Edit Instruction"]) {
-        if(answers["Edit Instruction"] === "cancel") {
-            console.info("Canceled.");
-        }
-        if(answers["Edit Instruction"] === "delete") {
-            if(answers["Edit - Delete"] === true) { choices.splice(installationMainAnswer, 1); }
-            addOrderNumbers();
-        }
-        if(answers["Edit Instruction"] === "order") {
-            let validChoices = answers["Edit - Order"]; // This is the valid choices from the order question, not including the "new" and "finish" options
-            let instruction = choices.splice(installationMainAnswer, 1);
-            choices.splice(answers["Edit - Order"] + 1, 0, instruction[0]);
-            console.log(`Order info... instruction ${instruction[0]} || edit - order answer + 1: ${answers["Edit - Order"] + 1}`)
-            addOrderNumbers();
-        }
-        if(answers["Edit Instruction"] === "text") {
-            let newText = answers["Edit - Text"];
-            let choice = choices.find(element => {
-                if (element["value"] == installationMainAnswer) {
-                    return element;
-                }
-                console.log(element);
-            })
-            // console.log(choices[0]);
-            // console.log("choices: ", choices);
-            // console.log(installationMainAnswer);
-            choice["name"] = newText;
-            addOrderNumbers();
-        }
-        await installationPrompt();
-    }
-
-    function addOrderNumbers() {
-        let validChoices = choices.slice(1, choices.length - 1);
-        let i = 1;
-        for(choice in validChoices) {
-            let value = validChoices[choice]["value"];
-            validChoices[choice]["name"] = `${i}. ${value}`;
-            i++;
-        }
-    }
-}
-
 function ListPrompt(questions, format, isNumbered) {
     this.questions = questions;
     this.format = format;
@@ -318,10 +255,7 @@ function ListPrompt(questions, format, isNumbered) {
     this.resetListElements();
     this.startPrompt = async function () {
         let answers = await inquirer.prompt(questions);
-        
         let mainAnswer = answers["Main"];
-        console.log("Answers: ", answers);
-        console.log("listElements[]: ", listElements);
         
         // If the user chose to add a new line:
         if(mainAnswer === "new") { 
@@ -383,7 +317,6 @@ function ListPrompt(questions, format, isNumbered) {
                     a c b d e
                     0 1 2 3 4 5 */
                 listElements.splice(orderAnswer, 0, objectToReorder);
-                console.log(orderAnswer);
                 updateOrderPrefixForListPrompt();
             }
             
