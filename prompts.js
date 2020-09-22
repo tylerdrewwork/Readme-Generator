@@ -277,6 +277,11 @@ async function installationPrompt() {
     }
 }
 
+function ListPrompt(questions, format, isNumbered) {
+    this.questions = questions;
+    this.format = format;
+}
+
 function Prompt(questions, format) {
     this.questions = questions;
     this.format = format;
