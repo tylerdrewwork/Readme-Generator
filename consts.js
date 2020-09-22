@@ -11,6 +11,20 @@ exports.contributingName = "Contributing";
 exports.testsName = "Tests";
 exports.questionsName = "Questions";
 
-exports.getUpdatedDateFormat = (updatedDate) => {
-    return `### **Last Updated Date**: ${updatedDate}`;
+exports.tagify = (name) => {
+    // let tag = name.map(char => {
+    //     if (char == ' ') {
+    //         return '-';
+    //     }
+    // })
+    let tag = name;
+    for (let i = 0; i < tag.length; i++) {
+        if (tag[i] === ' ') {
+            let newTag = tag.substr(0, i) + '-' + tag.substr(i + 1);
+            tag = newTag;
+            // tag[i] = '-';
+        }
+    }
+    console.log(tag);
+    return tag;
 }

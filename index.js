@@ -65,6 +65,7 @@ async function handleSectionCreation(sections){
                 break;
             case consts.tableOfContentsName:
                 // TODO Add Table Of Contents
+                addSection(createTableOfContents(sections));
                 break;
             case consts.installationName:
                 addSection(await prompts.installation.startPrompt());
@@ -112,6 +113,21 @@ function LogEndOfApplication() {
     console.info("Thank you for using The Ultimate README Generator! \n");
     console.info("You can find your README here: \n" + pathToFileURL("./README.md"));
     console.info("\n\nCreated by Tyler D Smith, Sept 2020. (www.github.com/sakiskid)");
+}
+
+//////////////////////////////////
+// ANCHOR Section-adding Functions 
+//////////////////////////////////
+
+function createTableOfContents(sections) {
+    let toc = "## Table Of Contents: ";
+
+    console.log(sections);
+
+    for (let i = 0; i < sections.length; i++) {
+        toc = toc + `\n[${sections[i]}](#${consts.tagify(sections[i])})`;
+    }
+    return toc;
 }
 
 startPrompt();

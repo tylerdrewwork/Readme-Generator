@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const style = require('./styling');
+const consts = require('./consts');
 inquirer.registerPrompt('selectLine', require('inquirer-select-line'));
 
 let prefixSymbol = "number";
@@ -193,36 +194,36 @@ const br2 = "\n\n";
 const getImageFormat = (...args) => {
     let imageAlt = args[0]["Image URL"];
     let imageURL = args[0]["Image Alt"];
-    return `![${imageAlt}](${imageURL})` + br2;
+    return getRefTag("image") + `![${imageAlt}](${imageURL})` + br2;
 }
 
 const getDeployedLinkFormat = (...args) => {
     let deployedLink = args[0]["Deployed Link"];
-    return `### [Click here to launch this application](${deployedLink})` + br2;
+    return getRefTag("deployedLink") + `### [Click here to launch this application](${deployedLink})` + br2;
 }
 
 const getLastUpdatedDateFormat = (...args) => {
     let lastUpdatedDate = args[0]["Updated Date"];
-    return `### **Last Updated**: ${lastUpdatedDate}` + br1;
+    return getRefTag(consts.tagify(consts.lastUpdateDateName)) + `### **Last Updated**: ${lastUpdatedDate}` + br2;
 }
 
 const getInstallationFormat = (...args) => {
-    let instructionsFormatted = "## Installation";
+    let installationFormatted = "## Installation";
     let instructions = args[0];
-    console.log(instructionsFormatted);
+    console.log(installationFormatted);
     console.log("args length", instructions);
     for (let i = 0; i < instructions.length; i++) {
-        instructionsFormatted = instructionsFormatted + "\n" + instructions[i];
-       console.log(instructionsFormatted);
+        installationFormatted = installationFormatted + "\n" + instructions[i];
+       console.log(installationFormatted);
     }
-    console.log(instructionsFormatted);
+    console.log(installationFormatted);
     
-    return instructionsFormatted;
+    return getRefTag(consts.tagify(consts.installationName)) + installationFormatted;
 }
 
 const getUsageFormat = (...args) => {
     let usage = args[0]["Usage"];
-    return `## **Usage**: ${usage}` + br1;
+    return getRefTag(consts.tagify(consts.usageName)) + `## **Usage**: ${usage}` + br1;
 }
 
 const getCurrentFeaturesFormat = (...args) => {
@@ -247,6 +248,10 @@ const getTestsFormat = (...args) => {
 
 const getContactFormat = (...args) => {
     
+}
+
+const getRefTag = (name) => {
+    return `<a name="${name}"></a>\n`;
 }
 
 //////////////////////////
