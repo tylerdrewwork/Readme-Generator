@@ -207,23 +207,12 @@ const getLastUpdatedDateFormat = (...args) => {
     return getRefTag(consts.tagify(consts.lastUpdateDateName)) + `### **Last Updated**: ${lastUpdatedDate}` + br2;
 }
 
-const getInstallationFormat = (...args) => {
-    let installationFormatted = "## Installation";
-    let instructions = args[0];
-    console.log(installationFormatted);
-    console.log("args length", instructions);
-    for (let i = 0; i < instructions.length; i++) {
-        installationFormatted = installationFormatted + "\n" + instructions[i];
-       console.log(installationFormatted);
-    }
-    console.log(installationFormatted);
-    
-    return getRefTag(consts.tagify(consts.installationName)) + installationFormatted;
+const getInstallationFormat = (list) => {
+    return getListFormat("## Installation", consts.installationName, list);
 }
 
-const getUsageFormat = (...args) => {
-    let usage = args[0]["Usage"];
-    return getRefTag(consts.tagify(consts.usageName)) + `## **Usage**: ${usage}` + br1;
+const getUsageFormat = (list) => {
+    return getListFormat("## Usage", consts.usageName, list);
 }
 
 const getCurrentFeaturesFormat = (...args) => {
@@ -250,6 +239,15 @@ const getContactFormat = (...args) => {
     
 }
 
+const getListFormat = (header, constName, list) => {
+    let listFormatted = header;
+    for (let i = 0; i < list.length; i++) {
+        listFormatted = listFormatted + "\n" + list[i];
+    }
+    listFormatted = listFormatted + "\n";
+    return getRefTag(consts.tagify(constName)) + listFormatted;
+}
+
 const getRefTag = (name) => {
     return `<a name="${name}"></a>\n`;
 }
@@ -258,16 +256,16 @@ const getRefTag = (name) => {
 // ANCHOR Prompt Functions
 //////////////////////////
 
-function ListPrompt(questions, format, isNumbered) {
-    this.questions = questions;
+function ListPrompt(name, format, isNumbered) {
+    this.name = name;
     this.format = format;
-    this.isNumbered = isNumbered;
     this.resetListElements = function () { 
         listElements = [] 
     };
     this.resetListElements();
     this.startPrompt = async function () {
-        let answers = await inquirer.prompt(questions);
+        console.info(style.textH1(name))
+        let answers = await inquirer.prompt(listQuestions);
         let mainAnswer = answers["Main"];
         
         // If the user chose to add a new line:
@@ -295,7 +293,7 @@ function ListPrompt(questions, format, isNumbered) {
 
         else if (mainAnswer === "finish") {
             let namesToFormat = listElements.map(element => element.name);
-            console.log(namesToFormat);
+            this.resetListElements();
             return this.format(namesToFormat);
         }
 
@@ -421,8 +419,8 @@ function Prompt(questions, format) {
 exports.image = new Prompt(imageQuestions, getImageFormat);
 exports.deployedLink = new Prompt(deployedLinkQuestions, getDeployedLinkFormat);
 exports.lastUpdatedDate = new Prompt(lastUpdatedDateQuestions, getLastUpdatedDateFormat);
-exports.usage = new Prompt(usageQuestions, getUsageFormat);
-exports.installation = new ListPrompt(listQuestions, getInstallationFormat);
+exports.usage = new ListPrompt(consts.usageName, getUsageFormat);
+exports.installation = new ListPrompt(consts.installationName, getInstallationFormat);
 // exports.currentFeatures = 
 // exports.plannedFeatures = 
 // exports.liscense = 
