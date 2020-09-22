@@ -1,6 +1,4 @@
-const { indexOf } = require('cli-color/beep');
 const inquirer = require('inquirer');
-const Choices = require('inquirer/lib/objects/choices');
 const style = require('./styling');
 inquirer.registerPrompt('selectLine', require('inquirer-select-line'));
 
@@ -34,7 +32,7 @@ const listQuestions = [
                 },
                 {
                     name: "FINISH",
-                    value: "done"
+                    value: "finish"
                 },
                 {
                     name: "CHANGE PREFIX SYMBOL",
@@ -63,7 +61,7 @@ const listQuestions = [
         type: "list",
         message: "How would you like to edit this line?",
         when: (answers) => { // If the user chose to edit a line...
-            if (answers["Main"] !== "done" &&
+            if (answers["Main"] !== "finish" &&
                 answers["Main"] !== "new" &&
                 answers["Main"] !== "prefixSymbol") {
                 return true;
@@ -209,7 +207,15 @@ const getLastUpdatedDateFormat = (...args) => {
 }
 
 const getInstallationFormat = (...args) => {
-    // TODO add installation format
+    let instructionsFormatted = "## Installation";
+    console.log(instructionsFormatted);
+    for (let i = 0; i < args.length; i++) {
+        instructionsFormatted = instructionsFormatted + `\n${args[i]}`;
+       console.log(instructionsFormatted);
+    }
+    console.log(instructionsFormatted);
+    
+    return "instructionsFormatted";
 }
 
 const getUsageFormat = (...args) => {
@@ -269,13 +275,21 @@ function ListPrompt(questions, format, isNumbered) {
             // Put order numbers or bullet points on it
             updateOrderPrefixForListPrompt();
             // Then restart prompt
+            style.consoleClear();
             await this.startPrompt();
         } 
 
         else if (mainAnswer === "prefixSymbol") {
             changeOrderSymbol();
             updateOrderPrefixForListPrompt();
+            style.consoleClear();
             await this.startPrompt();
+        }
+
+        else if (mainAnswer === "finish") {
+            let namesToFormat = listElements.map(element => element.name);
+            console.log(namesToFormat);
+            this.format(namesToFormat);
         }
 
         // EDITING A LINE:
@@ -325,6 +339,7 @@ function ListPrompt(questions, format, isNumbered) {
                 listObjectToEdit.value = textAnswer;
                 updateOrderPrefixForListPrompt();
             }
+            style.consoleClear();
             await this.startPrompt();
         }
     }
@@ -379,22 +394,23 @@ function Prompt(questions, format) {
     this.format = format;
     this.startPrompt = async function () {
         let answers = await inquirer.prompt(questions);
-        confirmPrompt(answers);
-    }
-}
 
-async function confirmPrompt(answers) {
         // Get the confirm answer, check if it's right!. Restart if confirm is false!
         for (answer in answers) {
             console.info(answer + ": " + answers[answer]);
         }
-        let confirmObject = await inquirer.prompt(confirmPrompt);
+        let confirmObject = await inquirer.prompt(confirmQuestion);
         if(confirmObject.confirm) {
             return this.format(answers);
         } else {
             return this.startPrompt();
         }
+    }
 }
+
+// async function confirmPrompt(answers) {
+// 
+// }
 
 // Prompt Exports
 
