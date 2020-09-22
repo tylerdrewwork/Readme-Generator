@@ -210,12 +210,12 @@ const getInstallationFormat = (...args) => {
     let instructionsFormatted = "## Installation";
     console.log(instructionsFormatted);
     for (let i = 0; i < args.length; i++) {
-        instructionsFormatted = instructionsFormatted + `\n${args[i]}`;
+        instructionsFormatted = instructionsFormatted + "\n" + args[i];
        console.log(instructionsFormatted);
     }
     console.log(instructionsFormatted);
     
-    return "instructionsFormatted";
+    return instructionsFormatted;
 }
 
 const getUsageFormat = (...args) => {
@@ -276,20 +276,20 @@ function ListPrompt(questions, format, isNumbered) {
             updateOrderPrefixForListPrompt();
             // Then restart prompt
             style.consoleClear();
-            await this.startPrompt();
+            return this.startPrompt();
         } 
 
         else if (mainAnswer === "prefixSymbol") {
             changeOrderSymbol();
             updateOrderPrefixForListPrompt();
             style.consoleClear();
-            await this.startPrompt();
+            return this.startPrompt();
         }
 
         else if (mainAnswer === "finish") {
             let namesToFormat = listElements.map(element => element.name);
             console.log(namesToFormat);
-            this.format(namesToFormat);
+            return this.format(namesToFormat);
         }
 
         // EDITING A LINE:
@@ -340,7 +340,7 @@ function ListPrompt(questions, format, isNumbered) {
                 updateOrderPrefixForListPrompt();
             }
             style.consoleClear();
-            await this.startPrompt();
+            return this.startPrompt();
         }
     }
 }
@@ -408,9 +408,6 @@ function Prompt(questions, format) {
     }
 }
 
-// async function confirmPrompt(answers) {
-// 
-// }
 
 // Prompt Exports
 
@@ -418,6 +415,7 @@ exports.image = new Prompt(imageQuestions, getImageFormat);
 exports.deployedLink = new Prompt(deployedLinkQuestions, getDeployedLinkFormat);
 exports.lastUpdatedDate = new Prompt(lastUpdatedDateQuestions, getLastUpdatedDateFormat);
 exports.usage = new Prompt(usageQuestions, getUsageFormat);
+exports.installation = new ListPrompt(listQuestions, getInstallationFormat);
 // exports.currentFeatures = 
 // exports.plannedFeatures = 
 // exports.liscense = 
@@ -427,6 +425,5 @@ exports.usage = new Prompt(usageQuestions, getUsageFormat);
 
 // Special Case Prompt Exports
 
-exports.installation = new ListPrompt(listQuestions, getInstallationFormat);
 // installation.startPrompt = async function () { await installationPrompt(); }
 // exports.installation = installation;
