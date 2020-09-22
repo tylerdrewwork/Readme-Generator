@@ -4,6 +4,8 @@ const Choices = require('inquirer/lib/objects/choices');
 const style = require('./styling');
 inquirer.registerPrompt('selectLine', require('inquirer-select-line'));
 
+let prefixSymbol = "number";
+
 //////////////////////////
 // ANCHOR Prompt Questions
 //////////////////////////
@@ -22,6 +24,8 @@ const listQuestions = [
         name: "Main",
         type: "list",
         message: style.textQuestion("Please configure: "),
+        loop: false,
+        pageSize: 16,
         choices: () => {
             let newChoices = [
                 {
@@ -31,6 +35,10 @@ const listQuestions = [
                 {
                     name: "FINISH",
                     value: "done"
+                },
+                {
+                    name: "CHANGE PREFIX SYMBOL",
+                    value: "prefixSymbol"
                 },
                 new inquirer.Separator(), // Separato
             ]
@@ -55,7 +63,9 @@ const listQuestions = [
         type: "list",
         message: "How would you like to edit this line?",
         when: (answers) => { // If the user chose to edit a line...
-            if (answers["Main"] !== "done" && answers["Main"] !== "new") {
+            if (answers["Main"] !== "done" &&
+                answers["Main"] !== "new" &&
+                answers["Main"] !== "prefixSymbol") {
                 return true;
             } else return false;
         },
@@ -89,12 +99,24 @@ const listQuestions = [
         type: "selectLine",
         message: "Please change order: ",
         when: (answers) => { if (answers["Edit"] === "order") return true; },
-        choices: () => {
-            let choices = installationQuestions[0].choices;
-            let validChoices = choices.map(object => object.name);
-            validChoices = validChoices.slice(1, choices.length - 1);
-            console.log("SelectLine valid choices: ", validChoices);
-            return validChoices;
+        choices: (answers) => {
+            // Take the element out of the list to display for more accurate reordering
+            let elementsToDisplay = listElements;
+            elementsToDisplay.splice(listElements.findIndex(element => element.value === answers["Main"]), 1);
+            
+            // Get an array of names from the objects
+            let listElementNames = listElements.map(element => element.name);
+
+
+            console.log("editorder answers" , answers,)
+            // console.log("elementToReorder: ", elementToReorder);
+            updateOrderPrefixForListPrompt();
+            return listElementNames;
+            // let choices = installationQuestions[0].choices;
+            // let validChoices = choices.map(object => object.name);
+            // validChoices = validChoices.slice(1, choices.length - 1);
+            // console.log("SelectLine valid choices: ", validChoices);
+            // return validChoices;
         },
     },
     {
@@ -320,8 +342,14 @@ function ListPrompt(questions, format, isNumbered) {
             // Put this at the end of the list
             listElements.push(newLine);
             // Put order numbers or bullet points on it
-            addOrderNumbers();
+            updateOrderPrefixForListPrompt();
             // Then restart prompt
+            await this.startPrompt();
+        } 
+
+        else if (mainAnswer === "prefixSymbol") {
+            changeOrderSymbol();
+            updateOrderPrefixForListPrompt();
             await this.startPrompt();
         }
 
@@ -333,42 +361,94 @@ function ListPrompt(questions, format, isNumbered) {
             let listObjectToEditIndex = listElements.findIndex(
                 element => element.value === mainAnswer);
 
-            if(editAnswer === "cancel") {
-                // Do nothing on cancel
-            }
-            if(editAnswer === "delete") {
+            if(editAnswer === "cancel") { } // Do nothing on cancel
+
+            else if(editAnswer === "delete") {
                 // Delete at the index of the chosen list object
                 if(answers["Edit - Delete"] === true) { 
                     listElements.splice(listObjectToEditIndex, 1);
                 }
-                addOrderNumbers();
+                updateOrderPrefixForListPrompt();
             }
-            if(editAnswer === "order") {
 
-                // let validChoices = answers["Edit - Order"]; // This is the valid choices from the order question, not including the "new" and "finish" options
+            else if(editAnswer === "order") {
+                let orderAnswer = answers["Edit - Order"];
+                // let elementToMove = listElements
+                // let validChoices = answers["Edit - Order"]; 
+                // This is the valid choices from the order question, not including the "new" and "finish" options
                 // let instruction = choices.splice(installationMainAnswer, 1);
                 // choices.splice(answers["Edit - Order"] + 1, 0, instruction[0]);
                 // console.log(`Order info... ${instruction[0]} || edit - order answer + 1: ${answers["Edit - Order"] + 1}`)
-                addOrderNumbers();
+
+                let objectToReorder = listElements.splice(listObjectToEditIndex);
+                //  0 1 2 3 4   | index
+                //  a b c d e   | element
+                // 0 1 2 3 4 5  | line
+                //  -------> take out c
+                //  0 1 2 3
+                //  a b d e
+                // 0 1 2 3 4 
+                //  -------> c to line 1. (it would splice into index 1)
+                //  0 1 2 3 4
+                //  a c b d e
+                // 0 1 2 3 4 5
+                listElements.splice(orderAnswer, 0, objectToReorder);
+
+                console.log(orderAnswer);
+                updateOrderPrefixForListPrompt();
             }
-            if(editAnswer === "text") {
+            
+            else if(editAnswer === "text") {
                 let textAnswer = answers["Edit - Text"];
                 listObjectToEdit.value = textAnswer;
-                addOrderNumbers();
+                updateOrderPrefixForListPrompt();
             }
             await this.startPrompt();
         }
+    }
+}
 
-        function addOrderNumbers() {
-            for(let i = 0; i < listElements.length; i++) {
-                let thisElement = listElements[i];
-                if(isNumbered == true) {
-                    thisElement.name = `${i + 1}. ${thisElement.value}`;
-                } else {
-                    thisElement.name = `- ${thisElement.value}`;
-                }
-            }
+function updateOrderPrefixForListPrompt() {
+    for(let i = 0; i < listElements.length; i++) {
+        let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let thisElement = listElements[i];
+        let prefix = "";
+        if(prefixSymbol === "number") {
+            prefix = `${i}. `;
+        } 
+        else if (prefixSymbol === "alphabet") {
+            prefix = `${alphabet[i]}. `;
         }
+        else if (prefixSymbol === "bullet") {
+            prefix = `• `;
+        }
+        else if (prefixSymbol === "dash") {
+            prefix = `- `;
+        }
+        else if (prefixSymbol === "none") {
+            PREFIX = ``;
+        }
+        thisElement.name = prefix + thisElement.value;
+    }
+}
+
+function changeOrderSymbol() {
+    switch(prefixSymbol) {
+        case "number":
+            prefixSymbol = "alphabet";
+            break;
+        case "alphabet":
+            prefixSymbol = "bullet";
+            break;
+        case "bullet":
+            prefixSymbol = "dash";
+            break;
+        case "dash":
+            prefixSymbol = "none";
+            break;
+        case "none":
+            prefixSymbol = "number";
+            break;
     }
 }
 
@@ -409,6 +489,6 @@ exports.usage = new Prompt(usageQuestions, getUsageFormat);
 
 // Special Case Prompt Exports
 
-exports.installation = new ListPrompt(listQuestions, getInstallationFormat, true);
+exports.installation = new ListPrompt(listQuestions, getInstallationFormat);
 // installation.startPrompt = async function () { await installationPrompt(); }
 // exports.installation = installation;
