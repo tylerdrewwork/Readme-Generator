@@ -6,16 +6,16 @@
 
 ![Ultimate README Generator](assets/urg.png)
 ## Table Of Contents: 
-[Image](#Image)
-[Deployed Link](#Deployed-Link)
-[Last Updated Date](#Last-Updated-Date)
-[Table of Contents](#Table-of-Contents)
-[About](#About)
-[Badges](#Badges)
-[Installation Instructions](#Installation-Instructions)
-[Usage](#Usage)
-[Current Features](#Current-Features)
-[license](#license)<a name="About"></a>
+- [Image](#Image)
+- [Deployed Link](#Deployed-Link)
+- [Last Updated Date](#Last-Updated-Date)
+- [Table of Contents](#Table-of-Contents)
+- [About](#About)
+- [Badges](#Badges)
+- [Installation Instructions](#Installation-Instructions)
+- [Usage](#Usage)
+- [Current Features](#Current-Features)
+- [license](#license)<a name="About"></a>
 
 # About
 
