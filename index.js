@@ -28,7 +28,7 @@ async function startPrompt() {
                     new inquirer.Separator(style.textH2("== Details ==")),
                     consts.installationName, consts.usageName, consts.currentFeaturesName, consts.plannedFeaturesName,
                     new inquirer.Separator(style.textH2("== About ==")),
-                    consts.licenseName, consts.contributingName, consts.testsName, consts.questionsName
+                    consts.licenseName, consts.contributingName, consts.testsName, consts.contactName
                 ],
                 loop: true,
                 pageSize: 16,
@@ -88,8 +88,8 @@ async function handleSectionCreation(sections){
             case consts.testsName:
                 addSection(await prompts.tests.startPrompt());
                 break;
-            case consts.questionsName:
-                addSection(await prompts.questions.startPrompt());
+            case consts.contactName:
+                addSection(await prompts.contact.startPrompt());
                 break;
         }
     }

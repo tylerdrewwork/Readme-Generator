@@ -141,46 +141,47 @@ const lastUpdatedDateQuestions = [
         message: style.textQuestion("Please input the date this project was last updated: ")
     }
 ]
-
-const installationQuestions = [
-    {
-        name: "Installation",
-        message: "Please list installation instructions",
-    },
-    ...listQuestions,
-]
-
 const usageQuestions = [
     {
         name: "Usage",
         message: style.textQuestion("Please input usage information: ")
     }
 ]
-
-const currentFeaturesQuestions = []
-
-const plannedFeaturesQuestions = []
-
 const licenseQuestions = [
     {
         name: "License",
         type: "list",
-        message: "Choose a license: ",
+        message: style.textQuestion("Select a license: "),
         choices: [
-            // "GNU AGPLv3" + "",
-            {
-                name: "testie!",
-                short: "shorty!"
-            }
+            "GNU AGPLv3",
+            "GNU GPLv3",
+            "MIT License",
+            "Mozilla Public License 2.0",
+            "Apache License 2.0",
         ]
     }
 ]
 
-const contributingQuestions = []
+const contributingQuestions = [
+    {
+        name: "Contribution",
+        message: style.textQuestion("Please list contributions: "),
+    }
+]
 
-const testsQuestions = []
+const testsQuestions = [
+    {
+        name: "Tests",
+        message: style.textQuestion("Please list testing info: "),
+    }
+]
 
-const contactQuestions = []
+const contactQuestions = [
+    {
+        name: "Contact",
+        message: style.textQuestion("Please list contact info: "),
+    }
+]
 
 
 /* NOTE: efficiency/readability upgrade!
@@ -204,53 +205,60 @@ Awesome!!! :D
 const br1 = "\n";
 const br2 = "\n\n";
 
-const getImageFormat = (...args) => {
-    let imageAlt = args[0]["Image URL"];
-    let imageURL = args[0]["Image Alt"];
-    return getRefTag("image") + `![${imageAlt}](${imageURL})` + br2;
+const getImageFormat = (answer) => {
+    let imageAlt = answer[0]["Image URL"];
+    let imageURL = answer[1]["Image Alt"];
+    return getRefTag(consts.tagify(consts.imageName)) + `![${imageAlt}](${imageURL})` + br2;
 }
 
-const getDeployedLinkFormat = (...args) => {
-    let deployedLink = args[0]["Deployed Link"];
-    return getRefTag("deployedLink") + `### [Click here to launch this application](${deployedLink})` + br2;
+const getDeployedLinkFormat = (answer) => {
+    return getPromptFormat("### [Click here to launch this application.]", deployedLinkName, answer[0] + br2);
 }
 
-const getLastUpdatedDateFormat = (...args) => {
-    let lastUpdatedDate = args[0]["Updated Date"];
-    return getRefTag(consts.tagify(consts.lastUpdateDateName)) + `### **Last Updated**: ${lastUpdatedDate}` + br2;
+const getLastUpdatedDateFormat = (answer) => {
+    return getPromptFormat("### **Last Updated**: ", lastUpdateDateName, answer[0] + br2);
 }
 
 const getInstallationFormat = (list) => {
-    return getListFormat("## Installation", consts.installationName, list);
+    return getListFormat("## Installation", consts.installationName, list + br2);
 }
 
 const getUsageFormat = (list) => {
-    return getListFormat("## Usage", consts.usageName, list);
+    return getListFormat("## Usage", consts.usageName, list + br2);
 }
 
 const getCurrentFeaturesFormat = (list) => {
-    return getListFormat("## Current Features", consts.currentFeaturesName, list);
+    return getListFormat("## Current Features", consts.currentFeaturesName, list + br2);
 }
 
-const getPlannedFeaturesFormat = (...args) => {
-    return getListFormat("## Planned Features", consts.plannedFeaturesName, list);
+const getPlannedFeaturesFormat = (list) => {
+    return getListFormat("## Planned Features", consts.plannedFeaturesName, list + br2);
 }
 
-const getlicenseFormat = (...args) => {
-    let license = args[0]["License"];
-    getRefTag(consts.tagify(consts.licenseName) + `## **License**: ${license}`);
+const getlicenseFormat = (answer) => {
+    return getPromptFormat("## **License**:", consts.licenseName, answer[0]) + br2;
 }
 
-const getContributingFormat = (...args) => {
-    
+const getContributingFormat = (answer) => {
+    return getPromptFormat("## Contributing", consts.contributingName, answer[0] + br2);
 }
 
-const getTestsFormat = (...args) => {
-    
+const getTestsFormat = (answer) => {
+    return getPromptFormat("## Tests", consts.testsName, answer[0] + br2);
 }
 
-const getContactFormat = (...args) => {
-    
+const getContactFormat = (answer) => {
+    return getPromptFormat("## Contact", consts.contactName, answer[0] + br2);
+}
+
+// Special Format Functions:
+
+const getRefTag = (name) => {
+    return `<a name="${name}"></a>\n`;
+}
+
+const getPromptFormat = (header, constName, body) => {
+    return getRefTag(consts.tagify(constName)) + header + "\n" + body;
 }
 
 const getListFormat = (header, constName, list) => {
@@ -260,10 +268,6 @@ const getListFormat = (header, constName, list) => {
     }
     listFormatted = listFormatted + "\n";
     return getRefTag(consts.tagify(constName)) + listFormatted;
-}
-
-const getRefTag = (name) => {
-    return `<a name="${name}"></a>\n`;
 }
 
 //////////////////////////
@@ -420,7 +424,7 @@ function Prompt(questions, format) {
         }
         let confirmObject = await inquirer.prompt(confirmQuestion);
         if(confirmObject.confirm) {
-            return this.format(answers);
+            return this.format(Object.values(answers));
         } else {
             return this.startPrompt();
         }
@@ -438,9 +442,9 @@ exports.installation = new ListPrompt(consts.installationName, getInstallationFo
 exports.currentFeatures = new ListPrompt(consts.currentFeaturesName, getCurrentFeaturesFormat)
 exports.plannedFeatures = new ListPrompt(consts.plannedFeaturesName, getPlannedFeaturesFormat);
 exports.license = new Prompt(licenseQuestions, getlicenseFormat);
-exports.contributing = 
-exports.tests = 
-exports.contact = 
+exports.contributing = new Prompt(contributingQuestions, getContributingFormat);
+exports.tests = new Prompt(testsQuestions, getTestsFormat);
+exports.contact = new Prompt(contactQuestions, getContactFormat);
 
 // Special Case Prompt Exports
 

@@ -9,7 +9,7 @@ exports.plannedFeaturesName = "Planned Features";
 exports.licenseName = "license";
 exports.contributingName = "Contributing";
 exports.testsName = "Tests";
-exports.questionsName = "Questions";
+exports.contactName = "Contact";
 
 exports.tagify = (name) => {
     // let tag = name.map(char => {
