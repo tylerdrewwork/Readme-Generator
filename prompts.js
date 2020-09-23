@@ -206,49 +206,51 @@ const br1 = "\n";
 const br2 = "\n\n";
 
 const getImageFormat = (answer) => {
-    let imageAlt = answer[0]["Image URL"];
-    let imageURL = answer[1]["Image Alt"];
-    return getRefTag(consts.tagify(consts.imageName)) + `![${imageAlt}](${imageURL})` + br2;
+    console.log("image answer: ", answer);
+    let imageAlt = answer[0];
+    let imageURL = answer[1];
+    return getRefTag(consts.tagify(consts.imageName)) + `![${imageAlt}](${imageURL})`;
 }
 
 const getDeployedLinkFormat = (answer) => {
-    return getPromptFormat("### [Click here to launch this application.]", deployedLinkName, answer[0] + br2);
+    return getRefTag(consts.tagify(consts.deployedLinkName)) + `### [Click here to launch this application.](${answer[0]})`;
+    return getPromptFormat("### [Click here to launch this application.]", consts.deployedLinkName, answer[0]);
 }
 
 const getLastUpdatedDateFormat = (answer) => {
-    return getPromptFormat("### **Last Updated**: ", lastUpdateDateName, answer[0] + br2);
+    return getPromptFormat("### **Last Updated**: ", consts.lastUpdateDateName, answer[0]);
 }
 
 const getInstallationFormat = (list) => {
-    return getListFormat("## Installation", consts.installationName, list + br2);
+    return getListFormat("## Installation", consts.installationName, list);
 }
 
 const getUsageFormat = (list) => {
-    return getListFormat("## Usage", consts.usageName, list + br2);
+    return getListFormat("## Usage", consts.usageName, list);
 }
 
 const getCurrentFeaturesFormat = (list) => {
-    return getListFormat("## Current Features", consts.currentFeaturesName, list + br2);
+    return getListFormat("## Current Features", consts.currentFeaturesName, list);
 }
 
 const getPlannedFeaturesFormat = (list) => {
-    return getListFormat("## Planned Features", consts.plannedFeaturesName, list + br2);
+    return getListFormat("## Planned Features", consts.plannedFeaturesName, list);
 }
 
 const getlicenseFormat = (answer) => {
-    return getPromptFormat("## **License**:", consts.licenseName, answer[0]) + br2;
+    return getPromptFormat("## **License**:", consts.licenseName, answer[0]);
 }
 
 const getContributingFormat = (answer) => {
-    return getPromptFormat("## Contributing", consts.contributingName, answer[0] + br2);
+    return getPromptFormat("## Contributing", consts.contributingName, answer[0]);
 }
 
 const getTestsFormat = (answer) => {
-    return getPromptFormat("## Tests", consts.testsName, answer[0] + br2);
+    return getPromptFormat("## Tests", consts.testsName, answer[0]);
 }
 
 const getContactFormat = (answer) => {
-    return getPromptFormat("## Contact", consts.contactName, answer[0] + br2);
+    return getPromptFormat("## Contact", consts.contactName, answer[0]);
 }
 
 // Special Format Functions:
@@ -258,7 +260,7 @@ const getRefTag = (name) => {
 }
 
 const getPromptFormat = (header, constName, body) => {
-    return getRefTag(consts.tagify(constName)) + header + "\n" + body;
+    return getRefTag(consts.tagify(constName)) + header + "\n\n" + body;
 }
 
 const getListFormat = (header, constName, list) => {
@@ -266,7 +268,7 @@ const getListFormat = (header, constName, list) => {
     for (let i = 0; i < list.length; i++) {
         listFormatted = listFormatted + "\n" + list[i];
     }
-    listFormatted = listFormatted + "\n";
+    listFormatted = listFormatted + "\n\n";
     return getRefTag(consts.tagify(constName)) + listFormatted;
 }
 
