@@ -183,6 +183,32 @@ const contactQuestions = [
     }
 ]
 
+const badgeQuestions = [
+    {
+        name: "github-user",
+        message: "For badges, please input your GitHub username (case sensitive): ",
+    },
+    {
+        name: "github-repo",
+        message: "For bades, please input this projects GitHub repository name (case sensitive): ",
+    },
+    {
+        name: "Badges",
+        type: "checkbox",
+        choices: [
+            "Code Size", "Repo Size", "Last Commit", 
+            "GitHub Stars", "GitHub Lines of Code", "Latest Release"
+        ]
+    }
+]
+
+const aboutQuestions = [
+    {
+        name: "About",
+        message: style.textQuestion("Please write a description of your project: "),
+    }
+]
+
 
 /* NOTE: efficiency/readability upgrade!
 -- Reduced EACH prompt code from 10+ lines to 1(!!) line of code each -- without sacrificing readability.
@@ -209,12 +235,11 @@ const getImageFormat = (answer) => {
     console.log("image answer: ", answer);
     let imageAlt = answer[0];
     let imageURL = answer[1];
-    return getRefTag(consts.tagify(consts.imageName)) + `![${imageAlt}](${imageURL})`;
+    return getRefTag(consts.tagify(consts.imageName)) + `![${imageAlt}](${imageURL})\n`;
 }
 
 const getDeployedLinkFormat = (answer) => {
-    return getRefTag(consts.tagify(consts.deployedLinkName)) + `### [Click here to launch this application.](${answer[0]})`;
-    return getPromptFormat("### [Click here to launch this application.]", consts.deployedLinkName, answer[0]);
+    return getRefTag(consts.tagify(consts.deployedLinkName)) + `\n### [Click here to launch this application.](${answer[0]})\n\n`;
 }
 
 const getLastUpdatedDateFormat = (answer) => {
@@ -253,14 +278,54 @@ const getContactFormat = (answer) => {
     return getPromptFormat("## Contact", consts.contactName, answer[0]);
 }
 
+const getAboutFormat = (answer) => {
+    return getPromptFormat("# About", consts.aboutName, answer[0]);
+}
+
+const getBadgeFormat = (answer) => {
+    console.log("badge answers: ", answer);
+    let username = answer[0];
+    let reponame = answer[1];
+    let badges = answer[2];
+    let formatted = "";
+        // code size: 
+    // repo size: 
+    // last commit: https://img.shields.io/github/last-commit/sakiskid/Readme-generator
+    // github stars https://img.shields.io/github/stars/test/test?style=plastic
+    // github lines of code: https://img.shields.io/tokei/lines/github/test/test
+    // release https://img.shields.io/github/v/release/test/test
+    for (let i = 0; i < badges.length; i++) {
+        if(badges[i] === "Code Size") {
+            formatted = formatted + `![Code Size](https://img.shields.io/github/languages/code-size/${username}/${reponame}?style=flat)`
+        }
+        else if(badges[i] === "Repo Size") {
+            formatted = formatted + `![Repo Size](https://img.shields.io/github/repo-size/${username}/${reponame}?style=flat)`
+        }
+        else if(badges[i] === "Last Commit") {
+            formatted = formatted + `![Last Commit](https://img.shields.io/github/last-commit/${username}/${reponame}?style=flat)`
+        }
+        else if(badges[i] === "GitHub Stars") {
+            formatted = formatted + `![GitHub Stars](https://img.shields.io/github/stars/${username}/${reponame}?style=flat)`
+        }
+        else if(badges[i] === "GitHub Lines of Code") {
+            formatted = formatted + `![GitHub Lines of Code](https://img.shields.io/tokei/lines/github/${username}/${reponame}?style=flat)`
+        }
+        else if(badges[i] === "Latest Release") {
+            formatted = formatted + `![Latest Release](https://img.shields.io/github/v/release/${username}/${reponame}?style=flat)`
+        }
+        formatted = formatted + "\n";
+    }
+    return getPromptFormat("#### Badges", consts.badgesName, formatted);
+}
+
 // Special Format Functions:
 
 const getRefTag = (name) => {
-    return `<a name="${name}"></a>\n`;
+    return `<a name="${name}"></a>\n\n`;
 }
 
 const getPromptFormat = (header, constName, body) => {
-    return getRefTag(consts.tagify(constName)) + header + "\n\n" + body;
+    return getRefTag(consts.tagify(constName)) + header + "\n\n" + body + "\n";
 }
 
 const getListFormat = (header, constName, list) => {
@@ -447,6 +512,8 @@ exports.license = new Prompt(licenseQuestions, getlicenseFormat);
 exports.contributing = new Prompt(contributingQuestions, getContributingFormat);
 exports.tests = new Prompt(testsQuestions, getTestsFormat);
 exports.contact = new Prompt(contactQuestions, getContactFormat);
+exports.badges = new Prompt(badgeQuestions, getBadgeFormat);
+exports.about = new Prompt(aboutQuestions, getAboutFormat);
 
 // Special Case Prompt Exports
 

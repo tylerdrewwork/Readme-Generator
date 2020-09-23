@@ -26,12 +26,13 @@ async function startPrompt() {
                     new inquirer.Separator(style.textH2("== Headers ==")),
                     consts.imageName, consts.deployedLinkName, consts.lastUpdateDateName, consts.tableOfContentsName,
                     new inquirer.Separator(style.textH2("== Details ==")),
-                    consts.installationName, consts.usageName, consts.currentFeaturesName, consts.plannedFeaturesName,
+                    consts.aboutName, consts.badgesName, consts.installationName, consts.usageName, consts.currentFeaturesName, consts.plannedFeaturesName,
                     new inquirer.Separator(style.textH2("== About ==")),
                     consts.licenseName, consts.contributingName, consts.testsName, consts.contactName
+                    //https://img.shields.io/github/languages/code-size/sakiskid/Readme-Generator?style=social
                 ],
                 loop: true,
-                pageSize: 16,
+                pageSize: 24,
             }
         ])
         .then( (answers) => {
@@ -65,7 +66,7 @@ async function handleSectionCreation(sections){
                 break;
             case consts.tableOfContentsName:
                 // TODO Add Table Of Contents
-                addSection(createTableOfContents(sections));
+                addSection(await createTableOfContents(sections));
                 break;
             case consts.installationName:
                 addSection(await prompts.installation.startPrompt());
@@ -91,6 +92,12 @@ async function handleSectionCreation(sections){
             case consts.contactName:
                 addSection(await prompts.contact.startPrompt());
                 break;
+            case consts.badgesName:
+                addSection(await prompts.badges.startPrompt());
+                break;
+            case consts.aboutName:
+                addSection(await prompts.about.startPrompt());
+                break;  
         }
     }
 

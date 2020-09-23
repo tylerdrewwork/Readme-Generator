@@ -10,6 +10,8 @@ exports.licenseName = "license";
 exports.contributingName = "Contributing";
 exports.testsName = "Tests";
 exports.contactName = "Contact";
+exports.badgesName = "Badges";
+exports.aboutName = "About";
 
 exports.tagify = (name) => {
     // let tag = name.map(char => {
